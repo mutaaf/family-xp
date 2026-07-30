@@ -40,6 +40,10 @@ jobs:
           open("/tmp/portal-inline.js", "w").write("\n;\n".join(scripts))
           EOF
           node --check /tmp/portal-inline.js
+      - name: Installer non-interactive dry-run
+        run: |
+          OUT=$(FAMILY_NAME=Testers SKIP_AGENTS=1 HOME=$(mktemp -d) bash install.sh | tail -1)
+          echo "$OUT" | grep -q "SETUP_COMPLETE url=http://testersfamily.local/" || { echo "$OUT"; exit 1; }
       - name: Required assets present
         run: |
           for f in index.html guestbook.js og.png favicon.ico favicon-32.png \

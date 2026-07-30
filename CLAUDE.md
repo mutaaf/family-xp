@@ -1,5 +1,8 @@
 # CLAUDE.md — agent guide for Family XP
 
+If a user just asked you to INSTALL/set this up: follow `AGENTS.md` instead.
+This file is the contract for changing code.
+
 Read this fully before changing anything. `README.md` = human overview,
 `docs/BACKLOG.md` = what to build next, `tests/test_portal.py` = executable
 spec, `README-CLAUDE.md` = historical build notes.

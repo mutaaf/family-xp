@@ -78,6 +78,11 @@ about **5 minutes**.
 `/leaderboard` on the TV, and download a "Premium" Siri voice in Settings →
 Accessibility → Spoken Content for the softest read-aloud voice.*
 
+**🤖 Or let an AI do it:** paste this repo's link into Claude (Desktop, Code,
+or any capable agent) and say **"get me started"** — the repo includes an
+[agent runbook](AGENTS.md) that walks it through install, verification, and
+handing you your family URL + passcode.
+
 **Comfortable with a terminal instead?**
 ```bash
 git clone https://github.com/mutaaf/family-xp && cd family-xp && ./install.sh

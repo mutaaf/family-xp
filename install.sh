@@ -5,7 +5,11 @@ set -euo pipefail
 REPO="$(cd "$(dirname "$0")" && pwd)"
 command -v /usr/bin/python3 >/dev/null || { echo "needs macOS python3 (xcode-select --install)"; exit 1; }
 
-read -rp "Your family name (e.g. Rivera): " FAM
+# non-interactive: FAMILY_NAME env or first argument (for AI agents / scripts)
+FAM="${FAMILY_NAME:-${1:-}}"
+if [ -z "$FAM" ]; then
+  read -rp "Your family name (e.g. Rivera): " FAM
+fi
 FAM=${FAM:-Our}
 SLUG=$(echo "$FAM" | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9')
 HOST="${SLUG:-our}family.local"
@@ -34,6 +38,10 @@ else
 fi
 
 LOGD="$HOME/Library/Logs/azizfamily"; mkdir -p "$LOGD"
+if [ "${SKIP_AGENTS:-}" = "1" ]; then   # CI / dry-run: config only
+  echo "SETUP_COMPLETE url=http://$HOST/ passcode=$PASS (agents skipped)"
+  exit 0
+fi
 agent() {  # name, program-args-xml
   local name=$1 args=$2
   cat > "$HOME/Library/LaunchAgents/com.familyxp.$name.plist" <<PLIST
@@ -60,3 +68,4 @@ echo "   Open:            http://$HOST/"
 echo "   Parent passcode: $PASS"
 echo "   Kids tap their card and run the setup wizard themselves."
 echo "   Rename/add kids anytime in Control Panel (parent desktop)."
+echo "SETUP_COMPLETE url=http://$HOST/ passcode=$PASS"
