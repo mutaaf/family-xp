@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.9", "3.12"]   # 3.9 = the Mac's system python that runs prod
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Compile server
+        run: python -m py_compile server/family_portal.py
+      - name: End-to-end API tests
+        run: python tests/test_portal.py
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate JSON assets
+        run: |
+          python3 -m json.tool site.webmanifest > /dev/null
+          echo "site.webmanifest OK"
+      - name: JS syntax check (portal script + guestbook)
+        run: |
+          node --check guestbook.js
+          python3 - <<'EOF'
+          import re
+          html = open("index.html").read()
+          scripts = re.findall(r"<script>(.*?)</script>", html, re.S)
+          assert scripts, "no inline script found"
+          open("/tmp/portal-inline.js", "w").write("\n;\n".join(scripts))
+          EOF
+          node --check /tmp/portal-inline.js
+      - name: Required assets present
+        run: |
+          for f in index.html guestbook.js og.png favicon.ico favicon-32.png \
+                   favicon-16.png apple-touch-icon.png icon-192.png icon-512.png \
+                   site.webmanifest vendor/matter.min.js leaderboard.html; do
+            test -f "$f" || { echo "missing $f"; exit 1; }
+          done
+          echo "all assets present"

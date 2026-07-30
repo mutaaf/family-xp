@@ -1,0 +1,7 @@
+# kids' pages + progress are family data, not code — they live only on the
+# server (and in its backups), never on GitHub
+kids/
+
+__pycache__/
+*.pyc
+.DS_Store

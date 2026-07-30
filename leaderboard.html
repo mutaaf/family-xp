@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Leaderboard</title>
+<link rel="icon" type="image/png" href="/favicon-32.png">
+<style>
+:root { --ink: #eef2ff; --dim: #8b94b8; --glass: rgba(255,255,255,.055); }
+* { margin: 0; box-sizing: border-box; }
+html, body { height: 100%; } @supports (height: 100dvh) { body { height: 100dvh; } }
+body {
+  font-family: -apple-system, "SF Pro Display", "Segoe UI", sans-serif;
+  color: var(--ink); background: #070a18; overflow: hidden;
+  display: flex; flex-direction: column; padding: 3.2vh 3.2vw;
+}
+/* aurora backdrop */
+body::before, body::after {
+  content: ""; position: fixed; inset: -30%; z-index: -1; filter: blur(90px);
+  background:
+    radial-gradient(38% 30% at 22% 28%, rgba(64,130,255,.32), transparent 70%),
+    radial-gradient(30% 26% at 78% 22%, rgba(190,80,255,.22), transparent 70%),
+    radial-gradient(34% 30% at 62% 82%, rgba(30,220,170,.20), transparent 70%);
+  animation: aur 26s ease-in-out infinite alternate;
+}
+body::after { animation-duration: 37s; animation-direction: alternate-reverse; opacity: .7; }
+@keyframes aur { from { transform: translate(-3%, -2%) scale(1); }
+                 to { transform: translate(3%, 3%) scale(1.12); } }
+
+header { display: flex; align-items: baseline; gap: 2vw; margin-bottom: 3vh; }
+header h1 { font-size: 4.2vh; font-weight: 800; letter-spacing: -.02em; }
+header h1 span { background: linear-gradient(90deg, #6ea8ff, #b98bff, #4fe3b0);
+  -webkit-background-clip: text; background-clip: text; color: transparent; }
+header .clock { margin-left: auto; text-align: right; }
+header .clock b { font-size: 4.2vh; font-variant-numeric: tabular-nums; font-weight: 700; }
+header .clock div { color: var(--dim); font-size: 1.8vh; }
+
+#cards { display: flex; gap: 2vw; flex: 1; min-height: 0; }
+.card {
+  flex: 1; background: var(--glass); border: max(1px, .12vh) solid rgba(255,255,255,.12);
+  border-radius: 2.6vh; padding: 3vh 2vw; display: flex; flex-direction: column;
+  gap: 1.6vh; -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); position: relative; overflow: hidden;
+  animation: rise .7s ease backwards;
+}
+.card:nth-child(2) { animation-delay: .12s; }
+.card:nth-child(3) { animation-delay: .24s; }
+@keyframes rise { from { opacity: 0; transform: translateY(24px); } }
+.card.leader { border-color: rgba(255,214,90,.55);
+  box-shadow: 0 0 60px rgba(255,196,40,.12) inset; }
+.crown { position: absolute; top: 2vh; right: 1.6vw; font-size: 3.4vh;
+  animation: bob 2.6s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-6px) rotate(6deg); } }
+.who { display: flex; align-items: center; gap: 1.2vw; }
+.who .av { width: 8.5vh; height: 8.5vh; border-radius: 2.2vh; overflow: hidden;
+  background: rgba(255,255,255,.08); flex: 0 0 auto; }
+.who .av svg { width: 100%; height: 100%; image-rendering: pixelated; }
+.who b { font-size: 3.4vh; font-weight: 800; letter-spacing: -.01em; }
+.who .lvl { color: var(--dim); font-size: 1.9vh; margin-top: .4vh; }
+.balance { font-size: 6.4vh; font-weight: 800; font-variant-numeric: tabular-nums;
+  letter-spacing: -.03em; line-height: 1; }
+.balance small { font-size: 2vh; color: var(--dim); font-weight: 600;
+  display: block; margin-top: .6vh; letter-spacing: .12em; }
+.bar { height: 1.4vh; border-radius: 99px; background: rgba(255,255,255,.08);
+  overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, #6ea8ff, #4fe3b0);
+  transition: width 1.2s cubic-bezier(.2,.8,.2,1); }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2vh 1vw;
+  margin-top: auto; }
+.stat { background: rgba(0,0,0,.22); border-radius: 1.6vh; padding: 1.4vh 1vw; }
+.stat b { font-size: 2.8vh; font-variant-numeric: tabular-nums; display: block; }
+.stat span { color: var(--dim); font-size: 1.5vh; }
+.pendbadge { position: absolute; top: 2vh; left: 1.6vw; background: #ff5d73;
+  color: #fff; border-radius: 99px; padding: .5vh 1vw; font-size: 1.6vh;
+  font-weight: 700; animation: bob 2s ease-in-out infinite; }
+
+#ticker { margin-top: 3vh; display: flex; align-items: center; gap: 1.4vw;
+  background: var(--glass); border: max(1px, .12vh) solid rgba(255,255,255,.12);
+  border-radius: 2vh; padding: 1.6vh 1.6vw; min-height: 7vh; }
+#ticker .lbl { color: var(--dim); font-size: 1.7vh; letter-spacing: .18em;
+  flex: 0 0 auto; }
+#feed { font-size: 2.3vh; font-weight: 600; flex: 1; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; }
+#feed .t { color: var(--dim); font-weight: 400; font-size: 1.7vh; margin-left: 1vw; }
+.card { cursor: pointer; transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+.card.zoom { transform: scale(1.06); z-index: 2;
+  box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+.cfx { position: fixed; top: -6vh; z-index: 30; font-size: 3.6vh;
+  transition: top 2.6s linear, transform 2.6s ease-in; pointer-events: none; }
+#splash { position: fixed; inset: 0; display: none; align-items: center;
+  justify-content: center; z-index: 40; pointer-events: none; }
+#splash.on { display: flex; }
+#splash b { font-size: 9vh; font-weight: 800; text-shadow: 0 6px 40px rgba(0,0,0,.6);
+  animation: splashin 2.6s ease forwards; }
+@keyframes splashin { 0% { opacity: 0; transform: scale(.6); }
+  12% { opacity: 1; transform: scale(1.05); } 80% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.1); } }
+@media (max-width: 760px) {
+  body { overflow: auto; } #cards { flex-direction: column; }
+  .balance { font-size: 5vh; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1><span data-fam>Family</span> Leaderboard</h1>
+  <div class="clock"><b id="time">--:--</b><div id="date"></div></div>
+</header>
+<div id="cards"></div>
+<div id="splash"><b></b></div>
+<div id="ticker"><span class="lbl">LATEST</span><div id="feed">Warming up…</div></div>
+
+<script>
+"use strict";
+const PAL = { K:"#1a1a1a",W:"#fff",w:"#e8e8e8",G:"#d8a425",R:"#d23c28",B:"#2b5fc4",
+  E:"#d6d3ce",e:"#a8a49c",T:"#2a9090",L:"#7fd4cf",V:"#3faf2c",O:"#e8973a",
+  H:"#5a3a1a",F:"#e8b98a",S:"#3b6ea5",n:"#1a2a4a",m:"#bfe8e2",P:"#f5bd00" };
+const ART = {
+astro:"nnnnnnnnnWnnnnnn|nWnnKKKKKKKnnnnn|nnnKWWWWWWWKnnnn|nnKWWWWWWWWWKnnn|nnKWKTTTTTKWKnnn|nnKWKTTLTTKWKnnn|nnKWKTTTTTKWKnnn|nnKWWKKKKKWWKnnn|nnnKWWWWWWWKnnnn|nnnnKKKKKKKnnnWn|nnnKOOOOOOOKnnnn|nnKOOOWWOOOOKnnn|nnKOOOWWOOOOKnnn|nKOOOOOOOOOOOKnn|nKOOOOOOOOOOOKnn|nnnWnnnnnnnnnnnn",
+robo:"mmmmmmmmmmmmmmmm|mmmmmmmKKmmmmmmm|mmmmmmKPPKmmmmmm|mmmmmmmKKmmmmmmm|mmmKKKKKKKKKKmmm|mmKEEEEEEEEEEKmm|mmKETTEEEETTEKmm|mmKETTEEEETTEKmm|mmKEEEEEEEEEEKmm|mmKEKWKWKWKWEKmm|mmKEEEEEEEEEEKmm|mmmKKKKKKKKKKmmm|mmmmKEEEEEEKmmmm|mmmKEEKEEKEEKmmm|mmmKEEEEEEEEKmmm|mmmmKKKKKKKKmmmm",
+cat:"mmmmmmmmmmmmmmmm|mmKKmmmmmmmKKmmm|mKOOKmmmmmKOOKmm|mKOOOKKKKKOOOKmm|mKOOOOOOOOOOOKmm|mKOOOOOOOOOOOKmm|mKOKKOOOOOKKOKmm|mKOKKOOOOOKKOKmm|mKOOOOOKOOOOOKmm|mKOOKOOOOOKOOKmm|mmKOOKKKKKOOKmmm|mmmKOOOOOOOKmmmm|mmKOOOOOOOOOKmmm|mKOOOOOOOOOOOKmm|mKOOOOOOOOOOOKmm|mmKKKKKKKKKKKmmm",
+dino:"nnnnnnnnnnnnnnnn|nnnnnnnKKKKKKnnn|nnnnnnKVVVVVVKnn|nnnnnnKVKVVVVKnn|nnnnnnKVVVVVVKnn|nnnnnnKVVKKKKKnn|nKnnnnKVVKnnnnnn|nKKnnKVVVVKnnnnn|nKVKKVVVVVVKKnnn|nKVVVVVVVVVVPKnn|nnKVVVVVVVVPKnnn|nnnKVVVVVVVKnnnn|nnnnKVKnKVKnnnnn|nnnnKVKnKVKnnnnn|nnnKKVKnKVKKnnnn|nnnKKKKnKKKKnnnn" };
+function px(name) {
+  const rows = (ART[name] || ART.robo).split("|");
+  let r = "";
+  rows.forEach((row, y) => [...row].forEach((c, x) => {
+    if (PAL[c]) r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${PAL[c]}"/>`; }));
+  return `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${r}</svg>`;
+}
+const esc = s => String(s).replace(/[&<>"']/g, c =>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function clock() {
+  const d = new Date();
+  let h = d.getHours(); const ap = h >= 12 ? "PM" : "AM"; h = h % 12 || 12;
+  document.getElementById("time").textContent =
+    `${h}:${String(d.getMinutes()).padStart(2, "0")} ${ap}`;
+  document.getElementById("date").textContent = d.toLocaleDateString(undefined,
+    { weekday: "long", month: "long", day: "numeric" });
+}
+clock(); setInterval(clock, 5000);
+
+let prevBal = {}, prevLeader = null;
+function confetti() {
+  const bits = ["🎉","⭐","🎊","🌈","🚀","💚"];
+  for (let i = 0; i < 40; i++) {
+    const e = document.createElement("div");
+    e.className = "cfx"; e.textContent = bits[i % bits.length];
+    e.style.left = Math.random() * 100 + "vw";
+    e.style.transitionDelay = (Math.random() * .5) + "s";
+    document.body.appendChild(e);
+    requestAnimationFrame(() => { e.style.top = "112vh";
+      e.style.transform = `rotate(${(Math.random() * 720 - 360) | 0}deg)`; });
+    setTimeout(() => e.remove(), 3600);
+  }
+}
+function splash(msg) {
+  const el = document.getElementById("splash");
+  el.querySelector("b").textContent = msg;
+  el.classList.remove("on"); void el.offsetWidth; el.classList.add("on");
+  setTimeout(() => el.classList.remove("on"), 2700);
+}
+function countUp(el, from, to) {
+  const t0 = performance.now(), dur = 1200;
+  function step(t) {
+    const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = Math.round(from + (to - from) * e).toLocaleString();
+    if (k < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+let feedItems = [], feedIdx = 0;
+function rotateFeed() {
+  const el = document.getElementById("feed");
+  if (!feedItems.length) { el.textContent = "Do a chore, earn XP, get famous here."; return; }
+  const e = feedItems[feedIdx % feedItems.length]; feedIdx++;
+  const ago = Math.max(1, Math.round((Date.now() / 1000 - e.ts) / 60));
+  const when = ago < 60 ? `${ago}m ago` : ago < 1440 ?
+    `${Math.round(ago / 60)}h ago` : `${Math.round(ago / 1440)}d ago`;
+  el.style.opacity = 0;
+  setTimeout(() => { el.innerHTML =
+    `${e.emoji} <b>${esc(e.who)}</b> ${esc(e.what)}<span class="t">${when}</span>`;
+    el.style.transition = "opacity .5s"; el.style.opacity = 1; }, 300);
+}
+setInterval(rotateFeed, 6000);
+
+async function refresh() {
+  let d;
+  try { d = await (await fetch("/api/leaderboard")).json(); }
+  catch (e) { return; }
+  if (d.error) { location.href = "/"; return; }
+  const top = Math.max(...d.kids.map(k => k.balance), 1);
+  const leader = d.kids.reduce((a, b) => b.balance > a.balance ? b : a, d.kids[0] || {});
+  document.getElementById("cards").innerHTML = d.kids.map(k => `
+    <div class="card ${k.id === leader.id && d.kids.length > 1 ? "leader" : ""}">
+      ${k.id === leader.id && d.kids.length > 1 ? `<div class="crown">👑</div>` : ""}
+      ${k.pending ? `<div class="pendbadge">${k.pending} waiting for Mom/Dad</div>` : ""}
+      <div class="who"><div class="av">${px(k.avatar)}</div>
+        <div><b>${esc(k.name)}</b><div class="lvl">Level ${k.level} · ${k.missionsDone}/${k.missionsTotal} missions</div></div>
+      </div>
+      <div class="balance"><span data-n="${k.balance}">${k.balance.toLocaleString()}</span><small>SPENDABLE XP 🎟️</small></div>
+      <div class="bar"><i style="width:${Math.round(100 * k.balance / top)}%"></i></div>
+      <div class="stats">
+        <div class="stat"><b>${k.pages}</b><span>websites built</span></div>
+        <div class="stat"><b>${k.visits.toLocaleString()}</b><span>page visits</span></div>
+        <div class="stat"><b>${k.robot}/8</b><span>robot levels</span></div>
+        <div class="stat"><b>${k.words.toLocaleString()}</b><span>words read 📖</span></div>
+      </div>
+    </div>`).join("");
+  feedItems = d.events || [];
+  document.querySelector("[data-fam]").textContent = (d.family || "Our") + " Family";
+  document.title = (d.family || "Our") + " Family — Leaderboard";
+  document.querySelectorAll(".card").forEach(c =>
+    c.addEventListener("click", () => c.classList.toggle("zoom")));
+  d.kids.forEach(k => {
+    const was = prevBal[k.id];
+    if (was !== undefined && k.balance > was) {
+      confetti();
+      const el = document.querySelector(`[data-n="${k.balance}"]`);
+      if (el) countUp(el, was, k.balance);
+    }
+    prevBal[k.id] = k.balance;
+  });
+  if (d.kids.length > 1 && prevLeader && leader.id !== prevLeader)
+    splash(`👑 ${leader.name} takes the lead!`);
+  prevLeader = leader.id;
+}
+refresh(); rotateFeed();
+setInterval(refresh, 8000);
+</script>
+</body>
+</html>
