@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family XP — Home is where the host is</title>
+<meta name="description" content="A Windows-XP-style family OS for your own Mac: chores become XP, XP becomes prizes, and the arcade teaches reading, math, circuits, physics and sports IQ. No cloud, no ads.">
+<meta property="og:title" content="Family XP — Home Is Where the Host Is 🏠">
+<meta property="og:description" content="Chores → XP → prizes. A learning arcade that talks. Your kids' data never leaves your house.">
+<meta property="og:image" content="https://raw.githubusercontent.com/mutaaf/family-xp/main/og.png">
+<style>
+:root { --blue:#245edb; --deep:#00309c; --grass:#5fa321; --gold:#ffd23f; --face:#ece9d8; }
+* { margin:0; box-sizing:border-box; }
+body { font-family: Tahoma, Verdana, "Segoe UI", sans-serif; color:#1a2a44; background:#eef4fb; }
+a { color:var(--deep); }
+.hero { color:#fff; text-align:center; padding:70px 20px 120px; position:relative; overflow:hidden;
+  background:linear-gradient(180deg,#2a63c8 0%,#5a92e0 45%,#9cc3ef 75%,#cfe3f8 100%); }
+.hero::after { content:""; position:absolute; left:-10%; right:-10%; bottom:-90px; height:220px;
+  background:linear-gradient(180deg,#8cc63e,#5fa321 40%,#2e6b10); border-radius:50% 60% 0 0/90% 100% 0 0; }
+.hero > * { position:relative; z-index:2; }
+.flag { width:88px; height:88px; margin:0 auto 14px; filter:drop-shadow(0 6px 14px rgba(0,20,80,.45)); }
+h1 { font-family:"Franklin Gothic Medium","Arial Black",Arial,sans-serif; font-size:clamp(40px,7vw,72px);
+  font-weight:700; text-shadow:0 3px 10px rgba(0,20,90,.5); }
+h1 .xp { color:#ffb327; font-style:italic; font-size:.72em; vertical-align:super; }
+.tag { font-size:clamp(17px,2.6vw,24px); font-weight:700; margin:10px 0 6px; text-shadow:0 2px 6px rgba(0,20,90,.5); }
+.sub { max-width:640px; margin:0 auto 26px; opacity:.95; line-height:1.55; text-shadow:0 1px 4px rgba(0,20,90,.4); }
+.ctas { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.btn { display:inline-block; padding:14px 26px; border-radius:12px; font-weight:700; font-size:16px;
+  text-decoration:none; box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 4px 10px rgba(0,20,0,.35); }
+.btn.start { background:linear-gradient(180deg,#7ede6e,#3faf2c 45%,#2c8f1c); color:#fff;
+  border:2px solid #1a5e1a; font-style:italic; }
+.btn.ghost { background:rgba(255,255,255,.16); color:#fff; border:2px solid rgba(255,255,255,.5); }
+.strip { background:var(--deep); color:#fff; text-align:center; padding:11px; font-size:14px; font-weight:700; }
+main { max-width:1060px; margin:0 auto; padding:56px 20px; }
+h2 { font-size:clamp(26px,4vw,36px); text-align:center; margin-bottom:8px; }
+.lead { text-align:center; color:#4a5a74; max-width:640px; margin:0 auto 34px; line-height:1.6; }
+.xpwin { background:var(--face); border:3px solid var(--blue); border-top:none; border-radius:10px 10px 4px 4px;
+  box-shadow:6px 8px 22px rgba(20,40,90,.18); overflow:hidden; }
+.tbar { height:32px; display:flex; align-items:center; gap:8px; padding:0 10px; color:#fff; font-weight:700; font-size:13px;
+  background:linear-gradient(180deg,#0058ee 0%,#3a93ff 10%,#288eff 42%,#127dff 88%,#036ffc 100%);
+  text-shadow:1px 1px 1px rgba(0,0,40,.6); }
+.tbar i { margin-left:auto; display:flex; gap:4px; font-style:normal; }
+.tbar i b { width:18px; height:18px; border-radius:4px; border:1px solid #fff; font-size:10px;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(180deg,#4d8ef7,#1c53c4); }
+.tbar i b.x { background:linear-gradient(180deg,#f5a293,#c23a1d); }
+.xpwin img { width:100%; display:block; }
+.shots { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:26px; margin-bottom:10px; }
+.cap { padding:12px 14px; font-size:13px; color:#3a4a64; line-height:1.5; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px; margin-top:26px; }
+.card { background:#fff; border-radius:14px; padding:22px; box-shadow:0 4px 14px rgba(20,40,90,.08);
+  border-top:4px solid var(--gold); line-height:1.55; font-size:14px; }
+.card h3 { margin-bottom:8px; font-size:16px; }
+.card.p { border-top-color:var(--blue); }
+.steps { counter-reset:s; max-width:680px; margin:26px auto 0; }
+.step { background:#fff; border-radius:14px; padding:18px 18px 18px 66px; margin-bottom:14px; position:relative;
+  box-shadow:0 4px 14px rgba(20,40,90,.08); line-height:1.55; font-size:15px; }
+.step::before { counter-increment:s; content:counter(s); position:absolute; left:16px; top:16px; width:34px; height:34px;
+  border-radius:10px; background:linear-gradient(180deg,#7ede6e,#2c8f1c); color:#fff; font-weight:800;
+  display:flex; align-items:center; justify-content:center; font-size:17px; }
+code { background:#e4ecf8; padding:2px 7px; border-radius:6px; font-size:.92em; }
+details { background:#fff; border-radius:12px; padding:14px 18px; margin-bottom:10px;
+  box-shadow:0 3px 10px rgba(20,40,90,.07); font-size:14px; line-height:1.55; }
+summary { font-weight:700; cursor:pointer; font-size:15px; }
+.tv { background:#0a0f22; color:#fff; padding:56px 20px; }
+.tv h2 { color:#fff; } .tv .lead { color:#9aa6c8; }
+.tv .xpwin { border-color:#333; max-width:860px; margin:0 auto; }
+footer { background:var(--deep); color:#cfe0ff; text-align:center; padding:30px 20px; font-size:13px; line-height:1.7; }
+footer a { color:#fff; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <svg class="flag" viewBox="0 0 46 46"><g transform="skewY(-7) translate(0,5)">
+    <path d="M2 2 q9-3 19 0 v17 q-10-3-19 0 Z" fill="#e0402a"/>
+    <path d="M25 2 q10-3 19 0 v17 q-9-3-19 0 Z" fill="#7db700"/>
+    <path d="M2 23 q9-3 19 0 v17 q-10-3-19 0 Z" fill="#2f7fe0"/>
+    <path d="M25 23 q10-3 19 0 v17 q-9-3-19 0 Z" fill="#f5bd00"/></g></svg>
+  <h1>Family<span class="xp">XP</span></h1>
+  <div class="tag">🏠 Home is where the host is.</div>
+  <p class="sub">A Windows-XP-style family computer that runs on <b>your own Mac</b>.
+    Chores become XP. XP becomes real prizes — <i>pick the family dinner, $10 to savings,
+    one YES to any reasonable ask</i>. And the arcade quietly teaches reading, math,
+    circuits, physics, coding and sports IQ.</p>
+  <div class="ctas">
+    <a class="btn start" href="https://github.com/mutaaf/family-xp#-getting-started-no-tech-skills-needed">▶ start — free install</a>
+    <a class="btn ghost" href="https://github.com/mutaaf/family-xp">View on GitHub</a>
+  </div>
+</div>
+<div class="strip">No cloud · No accounts · No ads · No subscriptions · Works with the internet down · MIT licensed</div>
+
+<main>
+  <h2>Every kid gets a computer of their own</h2>
+  <p class="lead">Their name on the sign-in card, their avatar, their wallpaper world,
+    their secret passcode — set up by them, in an XP-style wizard. Then the OS goes to work.</p>
+  <div class="shots">
+    <div class="xpwin"><div class="tbar">🖥 Sign in<i><b>─</b><b>☐</b><b class="x">✕</b></i></div>
+      <img src="screens/login.jpg" alt="Family XP login screen with kid sign-in cards" loading="lazy">
+      <div class="cap"><b>The front door.</b> Pixel avatars, one card per family member,
+        your family's name on everything.</div></div>
+    <div class="xpwin"><div class="tbar">⭐ A kid's desktop<i><b>─</b><b>☐</b><b class="x">✕</b></i></div>
+      <img src="screens/kid-desktop.jpg" alt="Kid desktop with Today's Adventure and learning games" loading="lazy">
+      <div class="cap"><b>Fresh every morning.</b> Today's Adventure speaks a word of the day
+        and deals three activities. Login streaks pay XP. Seventeen icons, zero ads.</div></div>
+  </div>
+  <div class="grid">
+    <div class="card"><h3>🕹 A learning arcade that talks</h3>
+      Reading Arcade &amp; Spelling Bee say the word out loud — pre-readers play everything.
+      Math Blaster, Memory Match, Robot Playground (loops → typed code!), Circuit Lab with
+      animated electrons, a real-physics slingshot lab, basketball &amp; football IQ.
+      Levels scale forever — past 1000.</div>
+    <div class="card"><h3>🌐 Real websites, really theirs</h3>
+      One tap scaffolds a webpage, live for the whole house. The Code Editor shows the
+      actual HTML. Paint drawings publish straight onto their page — and Grandma can
+      sign the guestbook.</div>
+    <div class="card"><h3>⭐ Quests that check the code</h3>
+      Missions mapped to real CS standards, auto-verified against the kid's actual work.
+      "Add a second button" ✓ → confetti. Parents can add "Read a whole book with Dad — 100 XP".</div>
+    <div class="card p"><h3>🧹 Chores → XP → prizes</h3>
+      Kids tap <i>"I did it!"</i>, you approve, XP lands. The Prize Counter reserves XP
+      until you make it official. Every price and chore is yours to edit.</div>
+    <div class="card p"><h3>🛡 Parent HQ</h3>
+      Up to 10 kids. Approvals, XP bonuses with an audit ledger, quest editing, one-tap
+      data export, resets, integrity checks. Atomic writes + nightly backups mean XP
+      is never lost.</div>
+    <div class="card p"><h3>🔒 Private by architecture</h3>
+      One zero-dependency Python file on your Mac. Your kids' data never leaves the house —
+      there is nowhere for it to go.</div>
+  </div>
+</main>
+
+<div class="tv">
+  <h2>📺 Put the leaderboard on the living-room TV</h2>
+  <p class="lead">Approve a chore from your phone — the TV erupts in confetti and the
+    crown moves in real time. Nothing motivates a Tuesday bed-making like a 👑 at stake.</p>
+  <div class="xpwin"><div class="tbar">👑 demofamily.local/leaderboard<i><b>─</b><b>☐</b><b class="x">✕</b></i></div>
+    <img src="screens/leaderboard.jpg" alt="Live family leaderboard on a TV" loading="lazy"></div>
+</div>
+
+<main>
+  <h2>Up and running in 5 minutes</h2>
+  <p class="lead">You need a Mac that stays home. That's the whole shopping list.</p>
+  <div class="steps">
+    <div class="step"><b>Get the folder.</b> <a href="https://github.com/mutaaf/family-xp/archive/refs/heads/main.zip">Download the ZIP</a>,
+      unpack it, and drag <code>family-xp</code> into your home folder.</div>
+    <div class="step"><b>Double-click <code>install.command</code>.</b> If macOS hesitates:
+      right-click → Open → Open. Answer one question — your family name.</div>
+    <div class="step"><b>Open your new address</b> — like <code>http://smithfamily.local/</code> —
+      on any phone, tablet or laptop on your wifi. Hand the kids their sign-in cards.</div>
+  </div>
+  <p class="lead" style="margin-top:26px">🤖 <b>Or just ask an AI.</b> Paste the GitHub link into
+    Claude and say <i>"get me started"</i> — the repo teaches the agent
+    <a href="https://github.com/mutaaf/family-xp/blob/main/AGENTS.md">exactly what to do</a>.</p>
+
+  <h2 style="margin-top:46px">Questions parents ask</h2>
+  <div style="max-width:680px;margin:20px auto 0">
+    <details><summary>Is it safe for my kids?</summary>
+      Everything runs and stays on your Mac — no cloud, no accounts, no tracking, no ads,
+      no chat with strangers. Passcodes gate the portal; the trust model is "people in
+      your house."</details>
+    <details><summary>Does it need the internet?</summary>
+      No. It's built to work with the internet down. (The read-aloud voice needs a
+      one-time iOS voice download.)</details>
+    <details><summary>What if a kid forgets their passcode?</summary>
+      The Control Panel shows it, or "Redo setup" starts them fresh — XP and pages survive.</details>
+    <details><summary>Can I change the prizes and chores?</summary>
+      All of it, live, from the parent desktop: chores, cadences, prize prices, even the
+      quest missions.</details>
+    <details><summary>What does it cost?</summary>
+      Nothing. Free, open source (MIT), no subscription — it's your computer doing the work.</details>
+  </div>
+</main>
+
+<footer>
+  <b>Family XP</b> — built with ❤️ and a lot of pixel art, by a family, for families.<br>
+  <a href="https://github.com/mutaaf/family-xp">GitHub</a> ·
+  <a href="https://github.com/mutaaf/family-xp/blob/main/AGENTS.md">AI install runbook</a> ·
+  <a href="https://github.com/mutaaf/family-xp/blob/main/docs/BACKLOG.md">Roadmap</a> · MIT
+</footer>
+</body>
+</html>
