@@ -83,13 +83,35 @@ footer a { color:#fff; }
     one YES to any reasonable ask</i>. And the arcade quietly teaches reading, math,
     circuits, physics, coding and sports IQ.</p>
   <div class="ctas">
-    <a class="btn start" href="https://github.com/mutaaf/family-xp#-getting-started-no-tech-skills-needed">▶ start — free install</a>
-    <a class="btn ghost" href="https://github.com/mutaaf/family-xp">View on GitHub</a>
+    <a class="btn start" href="#ai-install">🤖 Ask your AI to set it up</a>
+    <a class="btn ghost" href="#manual-install">Install it yourself</a>
+    <a class="btn ghost" href="https://github.com/mutaaf/family-xp">GitHub</a>
   </div>
 </div>
 <div class="strip">No cloud · No accounts · No ads · No subscriptions · Works with the internet down · MIT licensed</div>
 
-<main>
+<main id="ai-install" style="padding-bottom:0">
+  <h2>The easiest install you've ever done</h2>
+  <p class="lead">Copy this sentence, paste it into <b>Claude</b> (Desktop, Code — or any
+    capable AI agent on your Mac), and press enter. The repo carries its own
+    <a href="https://github.com/mutaaf/family-xp/blob/main/AGENTS.md">runbook</a> that tells
+    the agent exactly what to do — it installs everything, verifies it, and hands you your
+    family's web address and passcode.</p>
+  <div class="xpwin" style="max-width:680px;margin:0 auto">
+    <div class="tbar">🤖 Copy → paste → done<i><b>─</b><b>☐</b><b class="x">✕</b></i></div>
+    <div style="padding:18px;background:#fff">
+      <div id="prompt" style="font:15px/1.6 Menlo,monospace;background:#eef4fb;border:1px solid #b8ccec;
+        border-radius:10px;padding:14px;user-select:all">Set up https://github.com/mutaaf/family-xp on this Mac for my family — get me started.</div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap">
+        <button class="btn start" style="border:2px solid #1a5e1a;cursor:pointer;font-family:inherit"
+          onclick="navigator.clipboard.writeText(document.getElementById('prompt').textContent).then(()=>{this.textContent='✅ Copied!';setTimeout(()=>this.textContent='📋 Copy the magic sentence',1600)})">📋 Copy the magic sentence</button>
+        <span style="font-size:13px;color:#4a5a74">Needs: a Mac that stays home + an AI assistant that can run commands.</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<main style="padding-top:40px">
   <h2>Every kid gets a computer of their own</h2>
   <p class="lead">Their name on the sign-in card, their avatar, their wallpaper world,
     their secret passcode — set up by them, in an XP-style wizard. Then the OS goes to work.</p>
@@ -138,8 +160,8 @@ footer a { color:#fff; }
 </div>
 
 <main>
-  <h2>Up and running in 5 minutes</h2>
-  <p class="lead">You need a Mac that stays home. That's the whole shopping list.</p>
+  <h2 id="manual-install">Prefer to do it yourself? Still 5 minutes</h2>
+  <p class="lead">No AI needed — you need a Mac that stays home. That's the whole shopping list.</p>
   <div class="steps">
     <div class="step"><b>Get the folder.</b> <a href="https://github.com/mutaaf/family-xp/archive/refs/heads/main.zip">Download the ZIP</a>,
       unpack it, and drag <code>family-xp</code> into your home folder.</div>
@@ -148,9 +170,8 @@ footer a { color:#fff; }
     <div class="step"><b>Open your new address</b> — like <code>http://smithfamily.local/</code> —
       on any phone, tablet or laptop on your wifi. Hand the kids their sign-in cards.</div>
   </div>
-  <p class="lead" style="margin-top:26px">🤖 <b>Or just ask an AI.</b> Paste the GitHub link into
-    Claude and say <i>"get me started"</i> — the repo teaches the agent
-    <a href="https://github.com/mutaaf/family-xp/blob/main/AGENTS.md">exactly what to do</a>.</p>
+  <p class="lead" style="margin-top:26px">Terminal person?
+    <code>git clone https://github.com/mutaaf/family-xp && cd family-xp && ./install.sh</code></p>
 
   <h2 style="margin-top:46px">Questions parents ask</h2>
   <div style="max-width:680px;margin:20px auto 0">

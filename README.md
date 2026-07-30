@@ -57,8 +57,15 @@ erupts in confetti. The 👑 moves in real time.
 
 ## 🚀 Getting started (no tech skills needed)
 
-You need: **a Mac** that stays home (any Mac from the last ~8 years), and
-about **5 minutes**.
+**🤖 Easiest way — let an AI do it.** Paste this into Claude (Desktop or Code)
+on the Mac that will stay home:
+
+> Set up https://github.com/mutaaf/family-xp on this Mac for my family — get me started.
+
+The repo includes an [agent runbook](AGENTS.md); the AI installs everything,
+verifies it, and hands you your family URL + parent passcode.
+
+**Or do it yourself** — you need a Mac and about **5 minutes**:
 
 1. **Download**: click the green **Code** button at the top of this page →
    **Download ZIP** → double-click the ZIP to unpack it. Drag the `family-xp`
@@ -77,11 +84,6 @@ about **5 minutes**.
 💡 *Tips: add it to kids' iPad home screens (Share → Add to Home Screen), put
 `/leaderboard` on the TV, and download a "Premium" Siri voice in Settings →
 Accessibility → Spoken Content for the softest read-aloud voice.*
-
-**🤖 Or let an AI do it:** paste this repo's link into Claude (Desktop, Code,
-or any capable agent) and say **"get me started"** — the repo includes an
-[agent runbook](AGENTS.md) that walks it through install, verification, and
-handing you your family URL + passcode.
 
 **Comfortable with a terminal instead?**
 ```bash
