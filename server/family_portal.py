@@ -944,6 +944,13 @@ class PortalHandler(SimpleHTTPRequestHandler):
                     "words": int(prog.get("reading", {}).get("words", 0)),
                     "pages": len(kid_projects(kid)),
                     "visits": sum(stats.values()),
+                    "streak": int(prog.get("streak", {}).get("count", 0)),
+                    "today": sum(e.get("delta", 0)
+                                 for e in prog.get("ledger", [])
+                                 if e.get("delta", 0) > 0 and
+                                 time.strftime("%F", time.localtime(e.get("ts", 0)))
+                                 == time.strftime("%F")),
+                    "recent": prog.get("ledger", [])[-3:],
                     "pending": len(prog.get("chore_pending", [])) +
                         sum(1 for r in prog.get("redemptions", [])
                             if r.get("status") == "pending")})
@@ -1387,6 +1394,29 @@ class PortalHandler(SimpleHTTPRequestHandler):
                     except OSError:
                         pass
                 return self._json({"ok": True, "note": "progress archived + reset"})
+            if scope == "all":
+                arc = KIDS_DIR / ".archive"
+                arc.mkdir(parents=True, exist_ok=True)
+                now = int(time.time())
+                for kid in kid_ids():
+                    pf = progress_path(kid)
+                    if pf.exists():
+                        pf.rename(arc / ("progress-%s-%d.json" % (kid, now)))
+                    for suffix in (".bak", ".tmp"):
+                        try:
+                            Path(str(pf) + suffix).unlink()
+                        except OSError:
+                            pass
+                    _, missions = kid_track(kid)
+                    fresh = {"revoked": sorted(
+                        m["id"] for m in missions
+                        if m.get("check", {}).get("type") != "claim"
+                        and run_check(kid, m.get("check", {})))}
+                    _write_json(pf, fresh)
+                return self._json({"ok": True,
+                                   "note": "all kids archived + zeroed; "
+                                           "already-earned page missions are "
+                                           "switched off until re-allowed"})
             if scope in ("missions", "chores"):
                 target = {"missions": MISSIONS_PATH, "chores": CHORES_PATH}[scope]
                 arc = Path(str(target) + ".pre-reset-%d" % int(time.time()))

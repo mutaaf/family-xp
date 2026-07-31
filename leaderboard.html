@@ -31,7 +31,12 @@ header { display: flex; align-items: baseline; gap: 2vw; margin-bottom: 3vh; }
 header h1 { font-size: 4.2vh; font-weight: 800; letter-spacing: -.02em; }
 header h1 span { background: linear-gradient(90deg, #6ea8ff, #b98bff, #4fe3b0);
   -webkit-background-clip: text; background-clip: text; color: transparent; }
-header .clock { margin-left: auto; text-align: right; }
+header .total { margin-left: auto; text-align: right; margin-right: 2vw; }
+header .total b { font-size: 3.4vh; font-variant-numeric: tabular-nums;
+  background: linear-gradient(90deg, #ffd23f, #ff9c1a);
+  -webkit-background-clip: text; background-clip: text; color: transparent; }
+header .total div { color: var(--dim); font-size: 1.6vh; }
+header .clock { text-align: right; }
 header .clock b { font-size: 4.2vh; font-variant-numeric: tabular-nums; font-weight: 700; }
 header .clock div { color: var(--dim); font-size: 1.8vh; }
 
@@ -55,6 +60,17 @@ header .clock div { color: var(--dim); font-size: 1.8vh; }
   background: rgba(255,255,255,.08); flex: 0 0 auto; }
 .who .av svg { width: 100%; height: 100%; image-rendering: pixelated; }
 .who b { font-size: 3.4vh; font-weight: 800; letter-spacing: -.01em; }
+.medal { font-size: 3vh; margin-right: .6vw; }
+.chips { display: flex; gap: .8vw; flex-wrap: wrap; }
+.chip { background: rgba(255,255,255,.08); border-radius: 99px; padding: .6vh 1.2vw;
+  font-size: 1.7vh; font-weight: 700; }
+.chip.hot { background: rgba(255,120,40,.22); }
+.chip.up { background: rgba(60,220,140,.18); }
+.recent { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(6,9,20,.94);
+  border-radius: 0 0 2.6vh 2.6vh; padding: 1.6vh 1.6vw; transform: translateY(101%);
+  transition: transform .35s cubic-bezier(.2,.8,.2,1); font-size: 1.8vh; line-height: 1.9; }
+.card.open .recent { transform: translateY(0); }
+.recent b { color: #ffd23f; }
 .who .lvl { color: var(--dim); font-size: 1.9vh; margin-top: .4vh; }
 .balance { font-size: 6.4vh; font-weight: 800; font-variant-numeric: tabular-nums;
   letter-spacing: -.03em; line-height: 1; }
@@ -104,6 +120,7 @@ header .clock div { color: var(--dim); font-size: 1.8vh; }
 <body>
 <header>
   <h1><span data-fam>Family</span> Leaderboard</h1>
+  <div class="total"><b id="famtotal">0</b><div>FAMILY XP · ALL TIME</div></div>
   <div class="clock"><b id="time">--:--</b><div id="date"></div></div>
 </header>
 <div id="cards"><div style="margin:auto;color:var(--dim);font-size:2.4vh">
@@ -196,17 +213,33 @@ async function refresh() {
     return;
   }
   if (d.error) { location.href = "/"; return; }
+  d.kids.sort((a, b) => b.balance - a.balance);
   const top = Math.max(...d.kids.map(k => k.balance), 1);
-  const leader = d.kids.reduce((a, b) => b.balance > a.balance ? b : a, d.kids[0] || {});
-  document.getElementById("cards").innerHTML = d.kids.map(k => `
+  const leader = d.kids[0] || {};
+  document.getElementById("famtotal").textContent =
+    d.kids.reduce((n, k) => n + k.balance, 0).toLocaleString();
+  const SRC = { chore: "🧹", quest: "⭐", game: "🕹", reading: "📖", streak: "🔥",
+    parent_adjust: "✨", redeem: "🎁", refund: "↩️", quest_parent: "⭐", quest_undo: "↺" };
+  const MEDALS = ["🥇", "🥈", "🥉"];
+  document.getElementById("cards").innerHTML = d.kids.map((k, ri) => `
     <div class="card ${k.id === leader.id && d.kids.length > 1 ? "leader" : ""}">
       ${k.id === leader.id && d.kids.length > 1 ? `<div class="crown">👑</div>` : ""}
       ${k.pending ? `<div class="pendbadge">${k.pending} waiting for Mom or Dad</div>` : ""}
-      <div class="who"><div class="av">${px(k.avatar)}</div>
+      <div class="who"><span class="medal">${MEDALS[ri] || "🏅"}</span>
+        <div class="av">${px(k.avatar)}</div>
         <div><b>${esc(k.name)}</b><div class="lvl">Level ${k.level} · ${k.missionsDone}/${k.missionsTotal} missions</div></div>
+      </div>
+      <div class="chips">
+        ${k.streak > 1 ? `<span class="chip hot">🔥 ${k.streak}-day streak</span>` : ""}
+        ${k.today > 0 ? `<span class="chip up">⚡ +${k.today} today</span>` : ""}
       </div>
       <div class="balance"><span data-n="${k.balance}">${k.balance.toLocaleString()}</span><small>SPENDABLE XP 🎟️</small></div>
       <div class="bar"><i style="width:${Math.round(100 * k.balance / top)}%"></i></div>
+      <div class="recent">${(k.recent || []).slice().reverse().map(e =>
+        `<div>${SRC[(e.source || "").split(":")[0]] || "•"} <b>${e.delta > 0 ? "+" : ""}${e.delta} XP</b>
+         ${esc((e.note || e.source || "").split(":").pop())}</div>`).join("")
+         || "<div>No adventures yet today…</div>"}
+        <div style="color:#8b94b8;font-size:1.4vh">tap to close</div></div>
       <div class="stats">
         <div class="stat"><b>${k.pages}</b><span>websites built</span></div>
         <div class="stat"><b>${k.visits.toLocaleString()}</b><span>page visits</span></div>
@@ -218,7 +251,7 @@ async function refresh() {
   document.querySelector("[data-fam]").textContent = (d.family || "Our") + " Family";
   document.title = (d.family || "Our") + " Family — Leaderboard";
   document.querySelectorAll(".card").forEach(c =>
-    c.addEventListener("click", () => c.classList.toggle("zoom")));
+    c.addEventListener("click", () => c.classList.toggle("open")));
   d.kids.forEach(k => {
     const was = prevBal[k.id];
     if (was !== undefined && k.balance > was) {

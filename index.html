@@ -2846,6 +2846,7 @@ async function openControlPanel() {
       <button class="xbtn" data-edit="chores">🧹 Edit chores &amp; prizes</button>
       <button class="xbtn" data-export="all">💾 Export ALL kids' data</button>
       <button class="xbtn" data-integrity>🧪 Integrity check</button>
+      <button class="xbtn" data-nuke>🧨 Reset ALL kids' XP &amp; quests</button>
     </div>
     <div class="statusline">Changes to accounts apply instantly. Mission and
       registry edits apply on next use — no restart needed.</div>`;
@@ -2895,6 +2896,21 @@ async function openControlPanel() {
       if (res.error) { ding(); balloon("Couldn't reset", res.error); return; }
       tada(); balloon("Fresh start ♻️",
         "Chores, games, robot, streaks and bonuses wiped; old progress archived. Pages stay — so missions their code still earns will re-verify.");
+      load();
+    } else if (e.target.hasAttribute("data-nuke")) {
+      const btn = e.target;
+      if (btn.dataset.armed !== "1") {
+        btn.dataset.armed = "1"; btn.textContent = "⚠️ Tap again: zeroes EVERY kid"; ding();
+        balloon("Whoa there 🧨", "This zeroes every kid's XP, quests, games and " +
+          "streaks (archived, not deleted). Consider 💾 Export ALL first.");
+        setTimeout(() => { btn.dataset.armed = "0";
+          btn.textContent = "🧨 Reset ALL kids' XP & quests"; }, 5000);
+        return;
+      }
+      const res = await api("/api/admin/reset", { scope: "all" });
+      if (res.error) { ding(); balloon("Couldn't reset", res.error); return; }
+      tada(); balloon("Season 2 begins 🧨", "Everyone's at zero. Old progress is " +
+        "archived on the server. Let the games begin (again).", 9000);
       load();
     } else if (e.target.hasAttribute("data-integrity")) {
       const r = await api("/api/admin/integrity");
