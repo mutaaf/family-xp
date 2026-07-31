@@ -95,6 +95,12 @@ header .clock div { color: var(--dim); font-size: 1.8vh; }
   border-radius: 2vh; padding: 1.6vh 1.6vw; min-height: 7vh; }
 #ticker .lbl { color: var(--dim); font-size: 1.7vh; letter-spacing: .18em;
   flex: 0 0 auto; }
+#demobtn { position: fixed; left: 1.2vw; bottom: 1.2vh; z-index: 50;
+  background: rgba(255,255,255,.07); border: max(1px,.12vh) solid rgba(255,255,255,.18);
+  color: var(--dim); border-radius: 99px; padding: .8vh 1.6vw; font-size: 1.6vh;
+  font-weight: 700; cursor: pointer; font-family: inherit; }
+#demobtn.on { background: rgba(255,120,40,.25); color: #ffb327;
+  border-color: rgba(255,180,60,.5); }
 #feed { font-size: 2.3vh; font-weight: 600; flex: 1; white-space: nowrap;
   overflow: hidden; text-overflow: ellipsis; }
 #feed .t { color: var(--dim); font-weight: 400; font-size: 1.7vh; margin-left: 1vw; }
@@ -126,6 +132,7 @@ header .clock div { color: var(--dim); font-size: 1.8vh; }
 <div id="cards"><div style="margin:auto;color:var(--dim);font-size:2.4vh">
   Waking up the leaderboard…</div></div>
 <div id="splash"><b></b></div>
+<button id="demobtn">🎬 demo</button>
 <div id="ticker"><span class="lbl">LATEST</span><div id="feed">Warming up…</div></div>
 
 <script>
@@ -267,6 +274,12 @@ async function refresh() {
 }
 refresh(); rotateFeed();
 setInterval(refresh, 8000);
+document.getElementById("demobtn").addEventListener("click", function () {
+  DEMO = !DEMO; demoKids = null; prevBal = {}; prevLeader = null;
+  this.classList.toggle("on", DEMO);
+  this.textContent = DEMO ? "🎬 demo ON — tap for real data" : "🎬 demo";
+  refresh();
+});
 </script>
 </body>
 </html>
