@@ -2808,7 +2808,9 @@ async function openControlPanel() {
         <input class="xinput" data-k="name" value="${esc(u.name)}" placeholder="name">
         ${u.role === "kid" ? `
           <select data-k="avatar">${cfg.avatars.filter(a => a !== "avatar").map(a =>
-            `<option ${a === u.avatar ? "selected" : ""}>${a}</option>`).join("")}</select>
+            `<option value="${a}" ${a === u.avatar ? "selected" : ""}>${
+              ({astro: "🧑‍🚀 Astronaut", robo: "🤖 Robot", cat: "🐱 Cat",
+                dino: "🦖 Dino"})[a] || a}</option>`).join("")}</select>
           <select data-k="theme">${cfg.themes.map(t =>
             `<option ${t === u.theme ? "selected" : ""}>${t}</option>`).join("")}</select>` : ""}
         <input class="xinput" data-k="passcode" value="${esc(u.passcode || "")}"
@@ -2823,7 +2825,8 @@ async function openControlPanel() {
           <button class="xbtn" data-preset="${esc(u.id)}"
             title="Archive + wipe XP/quests/games; pages stay">♻️ Reset progress</button>` : ""}
         <div class="who">${u.role === "kid"
-          ? (u.onboarded ? "set up ✓ — sign-in name: " + esc(u.id)
+          ? (u.onboarded ? "set up ✓ — page-address codename: " + esc(u.id)
+              + " (permanent, keeps their links + XP safe)"
                          : "⏳ waiting for first sign-in (setup wizard)")
           : "administrator"}</div>
       </div>`).join("")}
