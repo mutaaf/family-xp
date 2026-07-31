@@ -2321,9 +2321,12 @@ function openQuestLog(kid) {
           </div>
           <span class="xpchip">+${m.xp} XP</span>
           ${USER.role === "parent"
-            ? `<button class="xbtn" data-tgl="${m.id}">${m.done ? "↺ Undo" : "✓ Done"}</button>
+            ? `<button class="xbtn" data-tgl="${m.id}">${m.done ? "↺ Undo"
+                : m.revoked ? "🚫 off — ✓ allow" : "✓ Done"}</button>
                <button class="xbtn" data-medit="${m.id}" title="edit mission">✏️</button>`
-            : m.done ? "" : m.check.type === "claim"
+            : m.done ? "" : m.revoked
+            ? `<span style="font-size:11px;color:#888">🚫 a parent switched this off</span>`
+            : m.check.type === "claim"
             ? `<button class="xbtn" data-claim="${m.id}">I did it!</button>`
             : `<button class="xbtn primary" data-chk="${m.id}">Check</button>`}
         </div>`).join("")}

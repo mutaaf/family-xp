@@ -537,8 +537,9 @@ def _quest_state_locked(kid, claim_id):
     prog = _read_json(progress_path(kid), {})
     done = prog.setdefault("done", {})
     changed = False
+    revoked = set(prog.get("revoked", []))
     for m in missions:
-        if m["id"] in done:
+        if m["id"] in done or m["id"] in revoked:
             continue
         passed = run_check(kid, m.get("check", {}))
         if not passed and claim_id == m["id"] and \
@@ -557,7 +558,8 @@ def _quest_state_locked(kid, claim_id):
         "xp": prog["xp"],
         "level": prog["xp"] // 100 + 1,
         "robot": int(prog.get("robot", 0)),
-        "missions": [{**m, "done": m["id"] in done} for m in missions],
+        "missions": [{**m, "done": m["id"] in done,
+                      "revoked": m["id"] in revoked} for m in missions],
         "badges": [m["badge"] for m in missions
                    if m["id"] in done and m.get("badge")],
     }
@@ -1135,10 +1137,19 @@ class PortalHandler(SimpleHTTPRequestHandler):
                 return self._json({"error": "unknown mission"}, 404)
             prog = _read_json(progress_path(kid), {})
             done = prog.setdefault("done", {})
+            revoked = set(prog.get("revoked", []))
+            m = next(x for x in missions if x["id"] == mid)
             if data.get("done"):
-                done[mid] = time.time()
+                if mid not in done:
+                    done[mid] = time.time()
+                    ledger(prog, "quest_parent:" + mid, m["xp"], "parent marked done")
+                revoked.discard(mid)
             else:
-                done.pop(mid, None)
+                if mid in done:
+                    done.pop(mid)
+                    ledger(prog, "quest_undo:" + mid, -m["xp"], "parent undo")
+                revoked.add(mid)   # sticky: auto-checks can't instantly re-award
+            prog["revoked"] = sorted(revoked)
             _write_json(progress_path(kid), prog)
             return self._json(quest_state(kid))
 

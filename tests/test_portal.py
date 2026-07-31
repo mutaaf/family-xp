@@ -309,5 +309,29 @@ class HardeningTest(PortalTest):
         self.assertEqual(status, 403)
 
 
+class QuestUndoTest(PortalTest):
+    def test_54_quest_undo_sticks(self):
+        parent = login("family", "bliss")
+        kid = login("robo")
+        call("/api/kids/new", {"kid": "robo", "name": "undo-page"}, cookie=kid)
+        call("/api/kids/file", {"kid": "robo", "proj": "undo-page",
+             "content": "<h1>x</h1>"}, cookie=kid)   # e2: button text gone
+        status, st, _ = call("/api/quests", cookie=kid)
+        self.assertTrue(next(m["done"] for m in st["missions"] if m["id"] == "e2"))
+        status, st, _ = call("/api/admin/quest",
+                             {"kid": "robo", "mission": "e2", "done": False},
+                             cookie=parent)
+        self.assertFalse(next(m["done"] for m in st["missions"] if m["id"] == "e2"))
+        status, st, _ = call("/api/quests", cookie=kid)   # would auto re-award before
+        m = next(m for m in st["missions"] if m["id"] == "e2")
+        self.assertFalse(m["done"]); self.assertTrue(m["revoked"])
+        status, st, _ = call("/api/quests/check", {"mission": "e2"}, cookie=kid)
+        self.assertNotIn("e2", st["new"])                # kid can't force it back
+        status, st, _ = call("/api/admin/quest",
+                             {"kid": "robo", "mission": "e2", "done": True},
+                             cookie=parent)
+        self.assertTrue(next(m["done"] for m in st["missions"] if m["id"] == "e2"))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
