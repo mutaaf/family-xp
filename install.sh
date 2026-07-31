@@ -1,6 +1,6 @@
 #!/bin/bash
 # Family XP one-command installer (macOS).
-# Sets up the portal, Bonjour name, self-healing watchdog and nightly backups.
+# Sets up the portal, Bonjour name and nightly backups.
 set -euo pipefail
 REPO="$(cd "$(dirname "$0")" && pwd)"
 command -v /usr/bin/python3 >/dev/null || { echo "needs macOS python3 (xcode-select --install)"; exit 1; }

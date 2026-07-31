@@ -106,7 +106,8 @@ header .clock div { color: var(--dim); font-size: 1.8vh; }
   <h1><span data-fam>Family</span> Leaderboard</h1>
   <div class="clock"><b id="time">--:--</b><div id="date"></div></div>
 </header>
-<div id="cards"></div>
+<div id="cards"><div style="margin:auto;color:var(--dim);font-size:2.4vh">
+  Waking up the leaderboard…</div></div>
 <div id="splash"><b></b></div>
 <div id="ticker"><span class="lbl">LATEST</span><div id="feed">Warming up…</div></div>
 
@@ -187,14 +188,20 @@ setInterval(rotateFeed, 6000);
 async function refresh() {
   let d;
   try { d = await (await fetch("/api/leaderboard")).json(); }
-  catch (e) { return; }
+  catch (e) {                       /* keep last good view; explain if empty */
+    if (!document.querySelector("#cards .card"))
+      document.getElementById("cards").innerHTML = `<div style="margin:auto;
+        color:var(--dim);font-size:2.4vh;text-align:center">Can't reach the
+        family server — retrying every few seconds…</div>`;
+    return;
+  }
   if (d.error) { location.href = "/"; return; }
   const top = Math.max(...d.kids.map(k => k.balance), 1);
   const leader = d.kids.reduce((a, b) => b.balance > a.balance ? b : a, d.kids[0] || {});
   document.getElementById("cards").innerHTML = d.kids.map(k => `
     <div class="card ${k.id === leader.id && d.kids.length > 1 ? "leader" : ""}">
       ${k.id === leader.id && d.kids.length > 1 ? `<div class="crown">👑</div>` : ""}
-      ${k.pending ? `<div class="pendbadge">${k.pending} waiting for Mom/Dad</div>` : ""}
+      ${k.pending ? `<div class="pendbadge">${k.pending} waiting for Mom or Dad</div>` : ""}
       <div class="who"><div class="av">${px(k.avatar)}</div>
         <div><b>${esc(k.name)}</b><div class="lvl">Level ${k.level} · ${k.missionsDone}/${k.missionsTotal} missions</div></div>
       </div>

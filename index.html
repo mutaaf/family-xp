@@ -141,7 +141,6 @@ button { font-family: inherit; }
 .loginballoon.on { display: block; animation: pop .18s ease-out; }
 .loginballoon b { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
 @keyframes pop { from { transform: scale(.85); opacity: 0; } }
-@keyframes dfpulse { 50% { opacity: .65; } }
 @keyframes bobk { 50% { transform: translateY(-5px) rotate(-6deg); } }
 .shake { animation: shake .4s; }
 @keyframes shake {
@@ -486,7 +485,8 @@ button { font-family: inherit; }
 .badgeshelf { display: flex; gap: 6px; margin: 6px 0 10px; min-height: 30px; }
 .badgeshelf .b { width: 28px; height: 28px; }
 .mrow { display: flex; gap: 10px; padding: 9px 8px; border-radius: 6px;
-  border: 1px solid #d8d2c0; margin-bottom: 6px; background: #fff; align-items: center; }
+  border: 1px solid #d8d2c0; margin-bottom: 6px; background: #fff;
+  align-items: center; flex-wrap: wrap; }
 .mrow.done { background: #eef8e8; border-color: #9ac97f; opacity: .85; }
 .mrow .mtick { width: 24px; height: 24px; flex: 0 0 auto; border-radius: 50%;
   border: 2px solid #9a9683; display: flex; align-items: center; justify-content: center;
@@ -601,7 +601,7 @@ button { font-family: inherit; }
     </div>
     <div class="loadtrack"><div class="loadblocks"><i></i><i></i><i></i></div></div>
   </div>
-  <div class="copyright"><span>Copyright © The Aziz Family</span><span>azizfamily.local</span></div>
+  <div class="copyright"><span>Copyright © This Family</span><span>family.local</span></div>
 </div>
 
 <!-- WELCOME / LOGIN -->
@@ -613,7 +613,7 @@ button { font-family: inherit; }
   <div class="mid">
     <div class="left">
       <div class="flag" data-flag></div>
-      <div class="brand"><b>Aziz Family</b><span class="xp">XP</span></div>
+      <div class="brand"><b>Our Family</b><span class="xp">XP</span></div>
       <div class="hint">To begin, click your name and type your passcode</div>
     </div>
     <div class="divider"></div>
@@ -621,7 +621,7 @@ button { font-family: inherit; }
   </div>
   <div class="rule"></div>
   <div class="band bottom">
-    <div class="turnoff"><span style="width:18px;height:18px;display:inline-block" data-flag></span> azizfamily.local</div>
+    <div class="turnoff"><span style="width:18px;height:18px;display:inline-block" data-flag></span> family.local</div>
     <div class="msg">Everyone gets their own desktop. Sign-ins last 30 days on each device.</div>
   </div>
 </div>
@@ -663,7 +663,7 @@ button { font-family: inherit; }
     </div>
   </div>
   <div id="balloon"><span class="bx" onclick="this.parentNode.classList.remove('on')">✕</span>
-    <b id="balloonhead">Aziz Family Network</b><span id="balloonmsg"></span></div>
+    <b id="balloonhead">Family Network</b><span id="balloonmsg"></span></div>
   <div id="ctxmenu">
     <div class="ci" data-act="refresh">Refresh</div>
     <div class="sep"></div>
@@ -1612,7 +1612,7 @@ function openToday(streakCount) {
   win.addEventListener("click", e => {
     if (e.target.closest("[data-sayword]")) { speak(word); return; }
     const b = e.target.closest("[data-act-i]");
-    if (b) { blip(); win._acts[+b.dataset.actI].a(); }
+    if (b) win._acts[+b.dataset.actI].a();
   });
   setTimeout(() => speak("Today's word is: " + word), 700);
 }
@@ -1780,10 +1780,10 @@ function buildDesktop() {
     d.innerHTML = `<div class="art px-icon">${iconSVG(it.icon)}</div>
       <div class="lbl">${esc(it.label)}</div>`;
     if (COARSE) d.addEventListener("click", () => {
-      d.classList.add("sel"); blip(); setTimeout(it.act, 120); });
+      d.classList.add("sel"); setTimeout(it.act, 120); });
     else {
       d.addEventListener("click", e => { selectIcon(d); e.stopPropagation(); });
-      d.addEventListener("dblclick", () => { blip(); it.act(); });
+      d.addEventListener("dblclick", it.act);
     }
     zone.appendChild(d);
   });
@@ -1990,14 +1990,17 @@ function openManager() {
         <div>▸ Open works from any device in the house.</div>
         <div>▸ Stop shuts it back down.</div>
       </div>
-      <div class="list"><div data-pmlist>Loading…</div>
+      <div class="list"><div data-pmlist>🔎 Finding your projects…</div>
         <div class="statusline" data-status></div></div>
     </div>`, 660);
   const listEl = win.querySelector("[data-pmlist]");
   const statusEl = win.querySelector("[data-status]");
 
   function render() {
-    if (!PROJECTS) { listEl.textContent = "Could not load projects."; return; }
+    if (!PROJECTS) {
+      listEl.textContent = "Can't reach the server right now — retrying…";
+      return;
+    }
     const links = (PROJECTS.links || []).map(l => `
       <div class="prow" data-kind="link" data-href="${esc(l.href)}">
         <div class="picon px-icon">${iconSVG(l.icon)}</div>
@@ -2025,7 +2028,7 @@ function openManager() {
     }).join("");
     listEl.innerHTML = links + apps;
     const running = (PROJECTS.apps || []).filter(a => a.live).length;
-    statusEl.textContent = `${(PROJECTS.apps || []).length} project(s) · ${running} running · azizfamily.local`;
+    statusEl.textContent = `${(PROJECTS.apps || []).length} project(s) · ${running} running · ${HOSTN}`;
   }
   render();
 
@@ -2066,18 +2069,19 @@ function openManager() {
     });
     render();
   }, 4000);
-  win.addEventListener("pointerdown", () => {}, true);
-  const origClose = win.closeWin;
   win.querySelector("[data-w=close]").addEventListener("click", () => clearInterval(poll));
 }
 
 function openLog(appId) {
   const win = makeWindow(`${appId} — log`, "notepad",
-    `<div class="notepadbody" style="max-height:340px;overflow:auto">Loading…</div>`, 560);
+    `<div class="notepadbody" style="max-height:340px;overflow:auto">Reading the log…</div>`, 560);
   api(`/api/app/${appId}/log`).then(d => {
     const el = win.querySelector(".notepadbody");
-    el.textContent = d.log || "(empty)";
+    el.textContent = d.error || d.log || "(empty)";
     el.scrollTop = el.scrollHeight;
+  }).catch(() => {
+    win.querySelector(".notepadbody").textContent =
+      "Couldn't fetch the log — is the server awake? Close this and try again.";
   });
 }
 
@@ -2122,8 +2126,10 @@ function openKidFolder(kid) {
     const row = e.target.closest(".prow");
     if (!row) return;
     const proj = row.dataset.proj;
-    if (e.target.hasAttribute("data-open"))
+    if (e.target.hasAttribute("data-open")) {
+      blip();
       location.href = `/kids/${kid}/${proj}/`;
+    }
     if (e.target.hasAttribute("data-edit"))
       openEditor(kid, proj);
     if (e.target.hasAttribute("data-share")) {
@@ -2210,8 +2216,10 @@ function openEditor(kid, proj) {
     else { blip(); msg.style.color = "#2c8f1c"; msg.textContent = "Saved ✓"; }
     setTimeout(() => msg.textContent = "", 2500);
   });
-  win.querySelector("[data-view]").addEventListener("click", () =>
-    window.open(`/kids/${kid}/${proj}/`, "_blank"));
+  win.querySelector("[data-view]").addEventListener("click", () => {
+    blip();
+    window.open(`/kids/${kid}/${proj}/`, "_blank");
+  });
   const SNIPPETS = {
     headline: '\n<h2>My awesome headline</h2>\n',
     pic: '\n<div style="font-size:90px">🦖</div>\n',
@@ -2267,11 +2275,17 @@ function confetti() {
 function openQuestLog(kid) {
   const name = TILE_NAMES[kid] || kid;
   const win = makeWindow(`${name}'s Quest Log`, "star",
-    `<div data-qbody>Loading your missions…</div>`, 540);
+    `<div data-qbody>⭐ Loading your missions…</div>`, 540);
   const body = win.querySelector("[data-qbody]");
+  let editing = null;
 
   function render() {
-    if (!QUESTS || QUESTS.error) { body.textContent = "Couldn't load quests."; return; }
+    if (!QUESTS || QUESTS.error) {
+      body.innerHTML = `<div style="text-align:center;padding:16px;color:#555">
+        😴 The Quest Log didn't answer. Check the wifi, then…<br><br>
+        <button class="xbtn primary" data-retry>↻ Try again</button></div>`;
+      return;
+    }
     const pct = Math.min(100, QUESTS.xp % 100);
     const doneCount = QUESTS.missions.filter(m => m.done).length;
     body.innerHTML = `
@@ -2286,7 +2300,17 @@ function openQuestLog(kid) {
         || `<span style="font-size:11px;color:#888">Badges you earn appear here…</span>`}</div>
       <div style="font-size:11px;color:#555;margin-bottom:8px">
         ${doneCount}/${QUESTS.missions.length} missions complete</div>
-      ${QUESTS.missions.map(m => `
+      ${QUESTS.missions.map(m => editing === m.id ? `
+        <div class="mrow" style="background:#fff8dc">
+          <div style="flex:1;min-width:180px;display:flex;flex-direction:column;gap:5px">
+            <input class="xinput" data-e-title value="${esc(m.title)}" placeholder="mission title">
+            <input class="xinput" data-e-story value="${esc(m.story)}" placeholder="hint the kid hears">
+          </div>
+          <input class="xinput" data-e-xp value="${m.xp}" style="width:56px" inputmode="numeric">
+          <button class="xbtn primary" data-esave="${m.id}">💾 Save</button>
+          <button class="xbtn" data-edel="${m.id}">🗑</button>
+          <button class="xbtn" data-ecancel>✕</button>
+        </div>` : `
         <div class="mrow ${m.done ? "done" : ""}">
           <div class="mtick">${m.done ? "✓" : ""}</div>
           <div class="mtxt">
@@ -2298,7 +2322,7 @@ function openQuestLog(kid) {
           <span class="xpchip">+${m.xp} XP</span>
           ${USER.role === "parent"
             ? `<button class="xbtn" data-tgl="${m.id}">${m.done ? "↺ Undo" : "✓ Done"}</button>
-               <button class="xbtn" data-medit="${m.id}">✏️</button>`
+               <button class="xbtn" data-medit="${m.id}" title="edit mission">✏️</button>`
             : m.done ? "" : m.check.type === "claim"
             ? `<button class="xbtn" data-claim="${m.id}">I did it!</button>`
             : `<button class="xbtn primary" data-chk="${m.id}">Check</button>`}
@@ -2311,9 +2335,66 @@ function openQuestLog(kid) {
   }
   loadQuests(kid).then(render);
 
+  /* full missions list (minus runtime flags) for /api/admin/missions */
+  const missionsPayload = () => QUESTS.missions.map(m => {
+    const { done, ...rest } = m; return rest;
+  });
+  async function saveMissions(missions, okSound) {
+    const res = await api("/api/admin/missions", { kid, missions });
+    if (res.error) { ding(); balloon("Couldn't save", res.error); return false; }
+    QUESTS = res; editing = null; okSound(); render();
+    return true;
+  }
+
   body.addEventListener("click", async e => {
-    if (e.target.dataset.say) { speak(e.target.dataset.say); return; }
-    const mid = e.target.dataset.chk || e.target.dataset.claim;
+    const t = e.target;
+    if (t.dataset.say) { speak(t.dataset.say); return; }
+    if (t.hasAttribute("data-retry")) {
+      body.textContent = "⭐ Loading your missions…";
+      loadQuests(kid).then(render);
+      return;
+    }
+    if (t.dataset.tgl) {                     /* parent: mark done / undo */
+      const m = QUESTS.missions.find(x => x.id === t.dataset.tgl);
+      const res = await api("/api/admin/quest",
+        { kid, mission: m.id, done: !m.done });
+      if (res.error) { ding(); balloon("Hmm…", res.error); return; }
+      QUESTS = res;
+      m.done ? blip() : tada();
+      render();
+      return;
+    }
+    if (t.dataset.medit) { editing = t.dataset.medit; blip(); render(); return; }
+    if (t.hasAttribute("data-ecancel")) { editing = null; blip(); render(); return; }
+    if (t.dataset.esave) {                   /* parent: save edited mission */
+      const missions = missionsPayload().map(m => m.id !== t.dataset.esave ? m : {
+        ...m,
+        title: body.querySelector("[data-e-title]").value.trim() || m.title,
+        story: body.querySelector("[data-e-story]").value.trim(),
+        xp: parseInt(body.querySelector("[data-e-xp]").value, 10) || m.xp,
+      });
+      saveMissions(missions, blip);
+      return;
+    }
+    if (t.dataset.edel) {                    /* parent: delete (tap twice) */
+      if (t.dataset.armed !== "1") {
+        t.dataset.armed = "1"; t.textContent = "⚠️ Sure?"; ding();
+        setTimeout(() => { t.dataset.armed = "0"; t.textContent = "🗑"; }, 4000);
+        return;
+      }
+      saveMissions(missionsPayload().filter(m => m.id !== t.dataset.edel), blip);
+      return;
+    }
+    if (t.hasAttribute("data-madd")) {       /* parent: add a mission */
+      const title = body.querySelector("[data-nm-title]").value.trim();
+      if (!title) { ding(); return; }
+      const xp = parseInt(body.querySelector("[data-nm-xp]").value, 10) || 10;
+      saveMissions(missionsPayload().concat({
+        id: "m" + Date.now(), title, story: "", std: "", xp,
+        check: { type: "claim" } }), tada);
+      return;
+    }
+    const mid = t.dataset.chk || t.dataset.claim;
     if (!mid) return;
     const res = await api("/api/quests/check", { kid, mission: mid });
     if (res.error) { ding(); balloon("Hmm…", res.error); return; }
@@ -2321,7 +2402,7 @@ function openQuestLog(kid) {
     if (USER.role === "kid") {
       const chip = $("lvlchip");
       chip.style.display = "inline";
-      chip.textContent = `⭐ Lv ${QUESTS.level}`;
+      chip.textContent = `⭐ Lv ${QUESTS.level} · 🎟 ${QUESTS.balance ?? "?"}`;
     }
     if ((res.new || []).length) {
       tada(); confetti();
@@ -2545,9 +2626,9 @@ function openRobot() {
       pendingRep = pendingRep >= 6 ? 2 : (pendingRep || 1) + 1;
       t.querySelector("[data-repn]").textContent = "×" + pendingRep; blip();
     } else if (t.hasAttribute("data-clear")) {
-      queue = []; pendingRep = 0; drawQueue();
+      queue = []; pendingRep = 0; blip(); drawQueue();
     } else if (t.hasAttribute("data-go")) run();
-    else if (t.hasAttribute("data-back")) { level = Math.max(0, level - 1); queue = []; render(); }
+    else if (t.hasAttribute("data-back")) { level = Math.max(0, level - 1); queue = []; blip(); render(); }
   });
   render();
 }
@@ -2632,63 +2713,6 @@ function startOOBE() {
         Remember your passcode — you'll need it every time!</div>
       <div class="nav"><button class="oobebtn ghost" data-prev>← Back</button>
         <button class="oobebtn" data-done>🚀 Open my desktop</button></div>`,
-    { say: "Chapter five: publishing. How the things you make become real for everyone else.",
-      html: `
-      <svg viewBox="0 0 300 150" style="width:100%;background:#eef6ff;border-radius:10px">
-        <path id="pubA" d="M52 40 L118 40" fill="none" stroke="none"/>
-        <path id="pubB" d="M170 40 L230 26" fill="none" stroke="none"/>
-        <path id="pubC" d="M170 40 L230 44" fill="none" stroke="none"/>
-        <path id="pubD" d="M170 40 L230 62" fill="none" stroke="none"/>
-        <rect x="14" y="24" width="38" height="30" rx="5" fill="#ece9d8" stroke="#0855dd" stroke-width="2"/>
-        <text x="33" y="43" text-anchor="middle" font-size="9" font-family="Tahoma">💾 Save</text>
-        <text x="33" y="66" text-anchor="middle" font-size="8" font-family="Tahoma">your editor</text>
-        <rect x="122" y="22" width="46" height="36" rx="4" fill="#d6d3ce" stroke="#555" stroke-width="2"/>
-        <text x="145" y="37" text-anchor="middle" font-size="8" font-family="Tahoma">📄 a real file</text>
-        <text x="145" y="49" text-anchor="middle" font-size="7" font-family="Tahoma">on the Mac's disk</text>
-        <text x="145" y="72" text-anchor="middle" font-size="8" font-family="Tahoma">the server guards it</text>
-        ${["📱","💻","📺"].map((e,i)=>`<text x="242" y="${32+i*18}" font-size="13">${e}</text>`).join("")}
-        <circle r="3.6" fill="#ff8a3a" stroke="#7b3a08"><animateMotion dur="1.4s" repeatCount="indefinite"><mpath href="#pubA"/></animateMotion></circle>
-        <circle r="3" fill="#3faf2c"><animateMotion dur="1.4s" begin=".5s" repeatCount="indefinite"><mpath href="#pubB"/></animateMotion></circle>
-        <circle r="3" fill="#3faf2c"><animateMotion dur="1.4s" begin=".8s" repeatCount="indefinite"><mpath href="#pubC"/></animateMotion></circle>
-        <circle r="3" fill="#3faf2c"><animateMotion dur="1.4s" begin="1.1s" repeatCount="indefinite"><mpath href="#pubD"/></animateMotion></circle>
-        <line x1="10" y1="92" x2="290" y2="92" stroke="#b8ccec" stroke-dasharray="4 3"/>
-        <text x="18" y="112" font-size="12">🖥️</text>
-        <path id="pubE" d="M36 108 L130 108" fill="none" stroke="none"/>
-        <rect x="132" y="98" width="44" height="20" rx="4" fill="#1a1f2e" stroke="#000"/>
-        <text x="154" y="111" text-anchor="middle" font-size="8" fill="#fff" font-family="Tahoma">GitHub</text>
-        <path id="pubF" d="M178 108 L262 108" fill="none" stroke="none"/>
-        <text x="268" y="113" font-size="13">🌍</text>
-        <circle r="3" fill="#b98bff"><animateMotion dur="2s" repeatCount="indefinite"><mpath href="#pubE"/></animateMotion></circle>
-        <circle r="3" fill="#4fe3b0"><animateMotion dur="2s" begin="1s" repeatCount="indefinite"><mpath href="#pubF"/></animateMotion></circle>
-        <text x="150" y="132" text-anchor="middle" font-size="7.5" font-family="Tahoma">the WORLD level: our Mac → GitHub (a library for code) → a website anyone on Earth can visit</text>
-      </svg>
-      <div class="notepadbody" style="font-size:12px"><b>"Publishing" just means: putting a file where a server can hand it out.</b>
-
-💾 When you press <b>Save</b> in your Code Editor, your words become a real
-file on the Mac's disk — <i>kids/you/your-project/index.html</i>. That's it.
-That's the whole magic. No file, no page; file, page.
-
-📣 The server's promise: <i>"any file in my folder, I will hand to anyone who
-asks for its address."</i> So the moment the file exists, your page has an
-ADDRESS — and an address is a thing you can give to people. That's what the
-Share button really does: it hands someone your file's address.
-
-🎨 Your Paint drawings? Each one becomes a picture file (art-123.png) sitting
-next to your page, and an &lt;img&gt; tag in your HTML that <i>points at it</i>.
-Pages are files pointing at files.
-
-🏠 <b>The house level:</b> our server only answers people on OUR wifi who
-signed in. That's a choice — your stuff is yours, and it stays home.
-
-🌍 <b>The world level:</b> this very system you're using went one level up!
-We put ITS files on GitHub — a giant public library where anyone can read the
-code — and a world-server hands out its website to the entire planet. Same
-exact idea as your dino page: files + a server + an address. The only
-difference between your page and YouTube is how many people the server answers.
-
-🧠 So the ladder is: <b>Save a file → a server guards it → it has an address →
-whoever you give the address (and the server allows) can see it.</b> You've
-already published. The world level is just a bigger wifi.</div>` },
   ];
 
   function render() {
@@ -2740,8 +2764,7 @@ already published. The world level is just a bigger wifi.</div>` },
       const res = await api("/api/onboard", {
         name: choice.name.trim(), avatar: choice.avatar,
         theme: choice.theme, passcode: choice.passcode.trim() });
-      if (res.error) { ding(); const err = card.querySelector("[data-err]");
-        balloon("Hmm…", res.error); return; }
+      if (res.error) { ding(); balloon("Hmm…", res.error); return; }
       USER = { ...USER, name: choice.name.trim(), avatar: choice.avatar,
                theme: choice.theme };
       TILE_NAMES[USER.id] = USER.name;
@@ -2759,12 +2782,17 @@ already published. The world level is just a bigger wifi.</div>` },
 /* ============ control panel (parent management view) ============ */
 async function openControlPanel() {
   const win = makeWindow("Control Panel", "gear",
-    `<div data-cp>Loading…</div>`, 560);
+    `<div data-cp>⚙️ Loading the family settings…</div>`, 560);
   const body = win.querySelector("[data-cp]");
   let cfg = null;
   async function load() {
     cfg = await api("/api/admin/config").catch(() => null);
-    if (!cfg || cfg.error) { body.textContent = (cfg && cfg.error) || "Couldn't load."; return; }
+    if (!cfg || cfg.error) {
+      body.innerHTML = `<div style="text-align:center;padding:16px;color:#555">
+        ${esc((cfg && cfg.error) || "Couldn't reach the server.")}<br><br>
+        <button class="xbtn primary" data-retry>↻ Try again</button></div>`;
+      return;
+    }
     render();
   }
   function render() {
@@ -2820,7 +2848,10 @@ async function openControlPanel() {
 
   body.addEventListener("click", async e => {
     const row = e.target.closest(".cprow");
-    if (e.target.hasAttribute("data-save") && row) {
+    if (e.target.hasAttribute("data-retry")) {
+      body.textContent = "⚙️ Loading the family settings…";
+      load();
+    } else if (e.target.hasAttribute("data-save") && row) {
       const payload = { id: row.dataset.uid };
       row.querySelectorAll("[data-k]").forEach(i => payload[i.dataset.k] = i.value);
       const res = await api("/api/admin/user", payload);
@@ -2924,12 +2955,18 @@ const tix = n => `🎟️ ${n} XP`;
 
 async function openChoreBoard() {
   const win = makeWindow(USER.role === "kid" ? "Chore Board" : "Chore Board — HQ",
-    "broom", `<div data-cb>Loading…</div>`, USER.role === "kid" ? 480 : 600);
+    "broom", `<div data-cb>🧹 Sweeping up the chore list…</div>`,
+    USER.role === "kid" ? 480 : 600);
   const body = win.querySelector("[data-cb]");
 
   async function render() {
     const d = await api("/api/chores").catch(() => null);
-    if (!d || d.error) { body.textContent = (d && d.error) || "Couldn't load."; return; }
+    if (!d || d.error) {
+      body.innerHTML = `<div style="text-align:center;padding:16px;color:#555">
+        😴 ${esc((d && d.error) || "The Chore Board didn't answer. Check the wifi, then…")}<br><br>
+        <button class="xbtn primary" data-retry>↻ Try again</button></div>`;
+      return;
+    }
 
     if (USER.role === "kid") {
       body.innerHTML = `
@@ -2946,7 +2983,7 @@ async function openChoreBoard() {
             ${c.state === "available"
               ? `<button class="xbtn primary" data-claim="${c.id}">I did it!</button>`
               : c.state === "pending"
-              ? `<span style="font-size:11px">🕐 waiting for Mom/Dad</span>`
+              ? `<span style="font-size:11px">🕐 waiting for Mom or Dad</span>`
               : `<span style="font-size:11px">✅ done — come back later</span>`}
           </div>`).join("")}
         <div style="text-align:center;margin-top:10px">
@@ -3004,6 +3041,11 @@ async function openChoreBoard() {
     const t = e.target;
     const d = body._cfg;
     if (t.dataset && t.dataset.say) { speak(t.dataset.say); return; }
+    if (t.hasAttribute("data-retry")) {
+      body.textContent = "🧹 Sweeping up the chore list…";
+      render();
+      return;
+    }
     if (t.hasAttribute("data-claim")) {
       const res = await api("/api/chores/claim", { chore: t.dataset.claim });
       if (res.error) { ding(); balloon("Hmm…", res.error); }
@@ -3014,12 +3056,12 @@ async function openChoreBoard() {
     } else if (t.hasAttribute("data-ap")) {
       await api("/api/chores/approve",
         { kid: t.dataset.kid, ts: +t.dataset.ts, ok: t.dataset.ap === "1" });
-      if (t.dataset.ap === "1") tada();
+      t.dataset.ap === "1" ? tada() : blip();
       render();
     } else if (t.hasAttribute("data-rr")) {
       await api("/api/rewards/resolve",
         { kid: t.dataset.kid, ts: +t.dataset.ts, ok: t.dataset.rr === "1" });
-      if (t.dataset.rr === "1") tada();
+      t.dataset.rr === "1" ? tada() : blip();
       render();
     } else if (t.dataset.xg || t.dataset.xt) {
       const kid = t.dataset.xg || t.dataset.xt;
@@ -3033,10 +3075,10 @@ async function openChoreBoard() {
       render();
     } else if (t.hasAttribute("data-delc") && d) {
       d.chores.splice(+t.dataset.delc, 1);
-      await api("/api/chores/config", { chores: d.chores }); render();
+      await api("/api/chores/config", { chores: d.chores }); blip(); render();
     } else if (t.hasAttribute("data-delr") && d) {
       d.rewards.splice(+t.dataset.delr, 1);
-      await api("/api/chores/config", { rewards: d.rewards }); render();
+      await api("/api/chores/config", { rewards: d.rewards }); blip(); render();
     } else if (t.hasAttribute("data-addc") && d) {
       const title = body.querySelector("[data-nc-title]").value.trim();
       const xp = parseInt(body.querySelector("[data-nc-xp]").value, 10) || 10;
@@ -3057,14 +3099,21 @@ async function openChoreBoard() {
 }
 
 async function openPrizeCounter() {
-  const win = makeWindow("Prize Counter", "gift", `<div data-pc>Loading…</div>`, 520);
+  const win = makeWindow("Prize Counter", "gift",
+    `<div data-pc>🎁 Opening the prize cabinet…</div>`, 520);
   const body = win.querySelector("[data-pc]");
 
   async function render() {
-    const d = await api("/api/chores").catch(() => null);
-    if (!d || d.error || USER.role !== "kid") {
+    if (USER.role !== "kid") {
       body.innerHTML = `<p>The Prize Counter is where kids trade XP for prizes.
         Kids: sign in to shop! Parents: manage prizes on the Chore Board.</p>`;
+      return;
+    }
+    const d = await api("/api/chores").catch(() => null);
+    if (!d || d.error) {
+      body.innerHTML = `<div style="text-align:center;padding:16px;color:#555">
+        😴 The prize cabinet is stuck. Check the wifi, then…<br><br>
+        <button class="xbtn primary" data-retry>↻ Try again</button></div>`;
       return;
     }
     const pending = (d.redemptions || []).find(r => r.status === "pending");
@@ -3091,6 +3140,11 @@ async function openPrizeCounter() {
   }
 
   body.addEventListener("click", async e => {
+    if (e.target.hasAttribute("data-retry")) {
+      body.textContent = "🎁 Opening the prize cabinet…";
+      render();
+      return;
+    }
     if (!e.target.hasAttribute("data-redeem")) return;
     const res = await api("/api/rewards/redeem", { reward: e.target.dataset.redeem });
     if (res.error) { ding(); balloon("Not yet!", res.error); }
@@ -3287,7 +3341,7 @@ function openMinesweeper() {
       win = true; face.textContent = "😎"; tada(); confetti();
     }
   }
-  face.addEventListener("click", reset);
+  face.addEventListener("click", () => { blip(); reset(); });
   reset();
 }
 
@@ -3299,7 +3353,7 @@ function openPaint() {
   const winEl = makeWindow("Paint", "paint", `
     <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
       <canvas width="440" height="300" style="background:#fff;border:2px inset #fff;
-        max-width:100%;touch-action:none;cursor:crosshair"></canvas>
+        max-width:100%;height:auto;touch-action:none;cursor:crosshair"></canvas>
       <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center">
         ${COLORS.map(c => `<button data-col="${c}" style="width:34px;height:34px;
           border:2px outset #fff;background:${c};cursor:pointer"></button>`).join("")}
@@ -3338,7 +3392,7 @@ function openPaint() {
     if (t.dataset.col) { color = t.dataset.col; blip(); }
     else if (t.dataset.size) { size = +t.dataset.size; blip(); }
     else if (t.hasAttribute("data-clear")) {
-      cx.fillStyle = "#fff"; cx.fillRect(0, 0, cv.width, cv.height); }
+      cx.fillStyle = "#fff"; cx.fillRect(0, 0, cv.width, cv.height); blip(); }
     else if (t.hasAttribute("data-send")) {
       const proj = winEl.querySelector("[data-proj]").value;
       if (!proj) { ding(); balloon("No page yet!", "Build Something New first."); return; }
@@ -3589,7 +3643,7 @@ function openBee() {
   body.addEventListener("click", e => {
     const t = e.target;
     if (t.hasAttribute("data-hear")) { speak(round[idx]); return; }
-    if (t.hasAttribute("data-back")) { built = built.slice(0, -1); show(); return; }
+    if (t.hasAttribute("data-back")) { built = built.slice(0, -1); blip(); show(); return; }
     if (!t.dataset.l) return;
     built += t.dataset.l; speak(t.dataset.l); show();
     const word = round[idx];
@@ -3812,7 +3866,7 @@ function openPhysics() {
       fact: "Jupiter's gravity is crushing — you need way more launch power!" },
   ];
   const world = () => WORLDS[(((level - 1) / 5) | 0) % 3];
-  const winEl = makeWindow("Physics Lab", "rocket", `
+  const winEl = makeWindow("Gravity Lab", "rocket", `
     <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
       <div data-hd style="font-size:12px;color:#555;font-weight:700"></div>
       <div data-stage style="border-radius:12px;overflow:hidden;line-height:0;
@@ -4572,7 +4626,11 @@ function openGridiron() {
 async function openDemoDay() {
   const d = await api("/api/demo").catch(() => null);
   const pages = (d && d.pages) || [];
-  if (!pages.length) { balloon("No pages yet!", "The kids haven't built anything yet."); return; }
+  if (!pages.length) {
+    ding();
+    balloon("No pages yet!", "The kids haven't built anything yet — Demo Day needs demos.");
+    return;
+  }
   let i = 0, timer = null;
   const ov = $("demoov");
   function show() {
@@ -4587,9 +4645,9 @@ async function openDemoDay() {
   timer = setInterval(() => next(1), 25000);
   ov.onclick = e => {
     const act = e.target.dataset && e.target.dataset.demo;
-    if (act === "next") next(1);
-    if (act === "prev") next(-1);
-    if (act === "close") { clearInterval(timer); ov.classList.remove("on");
+    if (act === "next") { blip(); next(1); }
+    if (act === "prev") { blip(); next(-1); }
+    if (act === "close") { blip(); clearInterval(timer); ov.classList.remove("on");
       $("demoframe").src = "about:blank"; }
   };
 }

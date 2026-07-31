@@ -9,6 +9,7 @@
   box.style.cssText = "max-width:560px;margin:40px auto 20px;padding:16px;" +
     "background:rgba(255,255,255,.85);border:3px solid #1446a0;border-radius:16px;" +
     "font-family:'Comic Sans MS','Chalkboard SE',sans-serif;text-align:left;color:#222";
+  box.textContent = "📖 Opening the guestbook…";
   document.body.appendChild(box);
 
   function esc(s) {
@@ -20,8 +21,15 @@
     let d;
     try {
       d = await (await fetch(`/api/guestbook?kid=${kid}&proj=${proj}`)).json();
-    } catch (e) { return; }
-    if (d.error) return;
+    } catch (e) {
+      box.textContent = "📖 The guestbook is napping — refresh the page to wake it up.";
+      return;
+    }
+    if (d.error) {
+      box.innerHTML = '📖 Sign in on the <a href="/">family home page</a> ' +
+        "to see the visit counter and sign the guestbook!";
+      return;
+    }
     const isMine = d.mine;
     const digits = String(d.visits).padStart(5, "0").split("").map(n =>
       `<span style="display:inline-block;background:#111;color:#3f3;padding:2px 6px;` +

@@ -28,7 +28,7 @@ iPhones — treat it as production.** Some kids may not read yet: every kid-faci
   Robot Playground (8 levels, sequences→loops→typed code); Reading Arcade
   (listen-first Dolch sight words); Math Blaster (spoken questions,
   easy/hard); Spelling Bee (hear-then-build); Memory Match; Circuit Lab (3 rotating modes: switch puzzles, conductor tests, wire-hunt
-  troubleshooting, with animated electron flow); Physics Lab (Matter.js slingshot: towers, momentum, Earth/Moon/Jupiter gravity); Court Vision (basketball-IQ 5v5 reads + court-zone/play vocabulary); Gridiron IQ (football downs/clock/terms). All arcade games have
+  troubleshooting, with animated electron flow); Gravity Lab (Matter.js slingshot: towers, momentum, Earth/Moon/Jupiter gravity); Court Vision (basketball-IQ 5v5 reads + court-zone/play vocabulary); Gridiron IQ (football downs/clock/terms). All arcade games have
   ENDLESS procedural levels (1..2000) persisted via POST /api/arcade
   {game,xp,level} (never regresses; resume via GET /api/arcade). TTS uses a
   friendly female voice (pickVoice()). Paint ("Send to my page" → PNG onto their site); Chore Board;
@@ -76,8 +76,8 @@ Config (all outside web root; editable in Control Panel → Advanced):
 seed a MISSING file** — to change live missions, edit the config too),
 `azizfamily-chores.json` (chores+prizes).
 
-launchd: `com.azizfamily.portal|mdns|deploy|watchdog`.
-Logs in `~/projects/market-digest/logs/` (portal, mdns, deploy, watchdog).
+launchd (created by `install.sh`): `com.familyxp.portal|mdns|backup`.
+Logs in `~/Library/Logs/azizfamily/` (portal, mdns, backup).
 
 ## Invariants — do not break
 
@@ -96,7 +96,7 @@ Logs in `~/projects/market-digest/logs/` (portal, mdns, deploy, watchdog).
    with a .bak of the previous version; corrupt files are quarantined
    (`*.corrupt-<ts>`) and reads fall back to .bak; every mutation is serialized
    under _DATA_LOCK; every XP movement lands in the per-kid append-only
-   `ledger`; nightly ZIP backups (com.azizfamily.backup → ~/Backups/azizfamily,
+   `ledger`; nightly ZIP backups (com.familyxp.backup → ~/Backups/azizfamily,
    30 kept). Parent tools: /api/admin/integrity, /api/admin/ledger,
    /api/admin/reset {scope: progress|missions|chores}. Reset keeps kid pages,
    so auto-verified page missions re-award by design.
@@ -105,7 +105,7 @@ Logs in `~/projects/market-digest/logs/` (portal, mdns, deploy, watchdog).
 
 ```bash
 python3 tests/test_portal.py                             # green?
-launchctl kickstart -k gui/$UID/com.azizfamily.portal    # apply local edits
+launchctl kickstart -k gui/$UID/com.familyxp.portal      # apply local edits
 git commit && git push                                   # CI; CD is for pulls only
 ```
 Never force-push main. Never edit `index.html`/server with sed-like blind
