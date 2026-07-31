@@ -4187,6 +4187,32 @@ function openCourt() {
       pass: "PF",
       ch: [["🤝 Drop it off to the 4", 1, "The shot-blocker made his choice — make him pay with the easy dump-off.", "pass"],
            ["🏀 Challenge the shot-blocker", 0, "He's 7 feet of NOPE. When help comes, somebody is open — find him.", "shoot"]] },
+    { min: 50, you: "SG", mods: { open: "SF" }, pass: "SF",
+      q: "FAST BREAK! It's 2-on-1 — one lonely defender backpedals between you and your small forward filling the other lane.",
+      ch: [["🤝 Make him commit, then dish", 1, "Perfect 2-on-1: attack until the defender picks somebody, then drop it to your buddy for the layup.", "pass"],
+           ["🏀 Pull up for a long shot", 0, "A 2-on-1 is a layup machine — never trade it for a long jumper.", "shoot"],
+           ["💨 Barrel straight into him", 0, "Make him CHOOSE first. Attack under control, then pass — that's how breaks finish.", "drive"]] },
+    { min: 55, you: "SF", mods: { open: "C" }, pass: "C",
+      q: "Their SMALLEST guard just switched onto your giant center down low — a total MISMATCH! What's the smart play?",
+      ch: [["🤝 Feed the big fella inside", 1, "A mismatch is a present — throw it into the post and let size go to work.", "pass"],
+           ["🏀 Ignore it and shoot a three", 0, "When a little guard is stuck on your center, feed the post every single time.", "shoot"],
+           ["💨 Dribble around out front", 0, "Don't dribble the mismatch away — get the ball inside where the advantage lives.", "drive"]] },
+    { min: 65, you: "PF",
+      q: "Your teammate's shot goes up! As the power forward battling near the rim, your FIRST job is to…",
+      ch: [["📦 Box out, THEN chase the ball", 1, "Find a body, seal them behind you, then go get it. Rebounds are won with position, not jumping.", "hold"],
+           ["👀 Stand and watch the ball fly", 0, "Ball-watchers lose rebounds. Hit the box-out first — position beats hops.", "hold"]] },
+    { min: 75, you: "PG",
+      q: "Your team is DOWN 2 with 20 seconds left and YOU have the ball. What's the smart plan?",
+      ch: [["💨 Attack NOW for a good shot", 1, "Down two, go get the tie early — if you miss, there's still time to foul or rebound. Never let the clock die.", "drive"],
+           ["⏳ Dribble out for one last heave", 0, "Holding for a hero shot while LOSING is a trap — attack early so a miss isn't the end.", "hold"]] },
+    { min: 100, you: "C",
+      q: "You snatch an OFFENSIVE rebound right under the rim, with only a tiny guard on your back.",
+      ch: [["🏀 Go right back up strong", 1, "Offensive rebound plus deep position? Go up strong — putbacks are the easiest points in basketball.", "shoot"],
+           ["🤝 Kick it back out to the arc", 0, "You're a foot from the rim with a small defender — finish it! Strong hands, strong finish.", "pass"]] },
+    { min: 110, you: "PG",
+      q: "TIE GAME, last possession, 10 ticks on the clock, ball in your hands at the top. What's the plan?",
+      ch: [["⏱ Wait, then attack for the LAST shot", 1, "In a tie game, make yours the final shot — score and win, or miss and play overtime. They never get an answer.", "drive"],
+           ["🏀 Fire away immediately", 0, "Score too fast and THEY get the ball back with time to beat you. In a tie, take the last shot.", "shoot"]] },
   ];
 
   const TRIV = [
@@ -4205,6 +4231,57 @@ function openCourt() {
     ["Bouncing the ball with TWO hands at once is…", "A double dribble", ["A power dribble", "Allowed"], "Double dribble — one hand at a time!"],
     ["How many fouls disqualify you (most leagues)?", "5", ["3", "10"], "Five fouls and you're out — play smart defense."],
     ["The winning stat that measures unselfishness?", "Assists", ["Dunks", "Steals"], "Assists — the pass-first mindset."],
+    /* rules: violations, fouls, clock */
+    ["Crashing into a defender who is standing still is a…", "Charge", ["Block", "Rebound"], "A charge — an offensive foul. If the defender is set first, the crasher gets the whistle."],
+    ["Hitting a shooter's arm during a shot gives them…", "Free throws", ["A timeout", "Five points"], "A shooting foul means free throws. Defend with your feet, not your hands!"],
+    ["Your toe touches the sideline while you hold the ball. You are…", "Out of bounds", ["Still in play", "In the paint"], "Out of bounds — even one toe on the line counts. Know where your feet are!"],
+    ["Standing inside the paint on offense too long is a…", "Three-second violation", ["Five-star play", "Free throw"], "Three seconds in the lane, then get out — keep the paint moving!"],
+    ["How many seconds do you get to inbound the ball?", "5", ["45", "90"], "Five seconds to pass it in — so move and get open for your teammate!"],
+    ["The NBA shot clock gives you how long to shoot?", "24 seconds", ["24 minutes", "2 seconds"], "24 seconds per possession — it keeps basketball fast and fun."],
+    ["Touching the ball while it's falling INTO the hoop is…", "Goaltending", ["A super block", "A rebound"], "Goaltending — the basket counts anyway! Block shots on the way up, not down."],
+    ["Every basketball game starts with a…", "Jump ball", ["Free throw", "Kickoff"], "The jump ball — the tip-off at the center circle starts it all."],
+    ["Dribbling back across half-court after crossing it is…", "Over and back", ["A fast break", "Totally fine"], "Over and back — a backcourt violation. Once you cross, keep attacking forward!"],
+    ["A foul while your shot goes IN earns you…", "One free throw", ["Nothing extra", "Ten points"], "And-one! The bucket counts PLUS a free throw. Finish strong through contact."],
+    ["Knocking only the BALL out of someone's hands is…", "A clean steal", ["Always a foul", "Goaltending"], "All ball! A clean steal is great defense — just never hack the arms."],
+    /* positions & roles */
+    ["The 2 position, often the team's best shooter, is the…", "Shooting guard", ["Center", "Goalie"], "The shooting guard — the 2 — hunts jumpers and threes."],
+    ["The 3 position, the do-everything wing, is the…", "Small forward", ["Tall forward", "Backup center"], "The small forward — the 3 — scores, defends, rebounds. A little of everything."],
+    ["The 4 position, strong and close to the hoop, is the…", "Power forward", ["Point guard", "Quarterback"], "The power forward — the 4 — muscles for rebounds and inside buckets."],
+    ["The best player who is NOT a starter is nicknamed the…", "Sixth man", ["Benchwarmer", "Substitute teacher"], "The sixth man — first off the bench, a spark who can change the whole game."],
+    ["The person in the striped shirt with the whistle is the…", "Referee", ["Coach", "Team captain"], "The referee — refs keep the game fair. Respect the whistle."],
+    ["The teammate who wears the C and leads the huddle is the…", "Captain", ["Contender", "Rookie"], "The captain — leads by example and lifts everyone up."],
+    /* court geography */
+    ["How high is the rim off the floor?", "10 feet", ["4 feet", "30 feet"], "Ten feet — same in the NBA and your driveway. Everyone shoots at the same sky."],
+    ["The line where you shoot after being fouled is the…", "Free-throw line", ["Finish line", "Half-court line"], "The free-throw line — 15 feet out, nobody guarding you. Practice till it's automatic."],
+    ["Shots from behind the big curved line are worth…", "3 points", ["2 points", "10 points"], "The three-point line — behind the arc, buckets count for three."],
+    ["The line that splits the court into two halves is the…", "Half-court line", ["Baseline", "Free-throw line"], "The half-court line — get the ball across it fast to beat the defense back."],
+    ["The line behind each hoop at the end of the court is the…", "Baseline", ["Skyline", "Arc"], "The baseline — the end line. Sneaky cutters slide along it for layups."],
+    ["The painted square on the backboard helps you aim…", "Bank shots", ["Free throws", "Passes"], "Aim for the square! Banking the ball off the glass makes layups easier."],
+    ["The circle at center court is used for the…", "Jump ball", ["Free throws", "Team huddle"], "The center circle — where the opening tip-off happens."],
+    /* famous concepts */
+    ["A teammate stands STILL to block your defender's path. That's a…", "Screen", ["Tackle", "Trap"], "A screen — also called a pick. Stand still like a statue; moving screens are fouls."],
+    ["Sprinting to score before the defense gets back is a…", "Fast break", ["Slow burn", "Long rest"], "The fast break — push the pace and score easy buckets before they're set!"],
+    ["Using your body to keep an opponent from a rebound is…", "Boxing out", ["Squaring up", "Backing down"], "Boxing out — find a body, seal them behind you, THEN grab the board."],
+    ["A high lob a teammate catches and slams in one jump is an…", "Alley-oop", ["Airball", "Overpass"], "The alley-oop — throw it up, throw it down! Timing is everything."],
+    ["Ten or more points, rebounds, AND assists in one game is a…", "Triple-double", ["Hat trick", "Grand slam"], "The triple-double — double digits in three stats. Do-it-all superstar stuff."],
+    ["Holding the ball so you can shoot, pass, OR drive is called…", "Triple threat", ["Triple-double", "Three-pointer"], "Triple threat stance — three options at once keeps defenders guessing."],
+    ["Faking a shot so the defender jumps is a…", "Pump fake", ["Belly flop", "Jump stop"], "The pump fake — get them in the air, then drive right past."],
+    ["Snapping your dribble from one hand to the other to change direction is a…", "Crossover", ["Turnover", "Handoff"], "The crossover — change direction in a blink and leave your defender behind."],
+    ["A game-winning shot as time runs out is a…", "Buzzer beater", ["Bell ringer", "Slam dunk"], "The buzzer beater — leave your hand before the horn and it counts. Instant legend!"],
+    ["A defense where players guard AREAS instead of people is a…", "Zone", ["Man-to-man", "Full-court press"], "Zone defense — protect your area and talk to your teammates nonstop."],
+    ["TWO defenders guarding the ball handler at once is a…", "Double team", ["Double dribble", "Twin play"], "The double team — two on the ball means a teammate is open somewhere. Find them!"],
+    /* stats literacy */
+    ["Losing the ball to the other team counts as a…", "Turnover", ["Makeover", "Leftover"], "A turnover — protect the ball! Fewer giveaways, more wins."],
+    ["You make 5 of 10 shots. Your shooting percentage is…", "50 percent", ["100 percent", "10 percent"], "Five out of ten is half — 50 percent. Good shooters know their numbers."],
+    ["Double digits in TWO stats — like 12 points and 11 rebounds — is a…", "Double-double", ["Triple-double", "Double dribble"], "A double-double — ten or more in two categories. A big night's work!"],
+    ["Which stat counts the shots you swat away?", "Blocks", ["Assists", "Rebounds"], "Blocks — the rim protector's favorite number."],
+    ["Your team has 58 points, theirs has 52. You lead by…", "6 points", ["10 points", "2 points"], "58 minus 52 is 6 — scoreboard math keeps your head in the game."],
+    /* sportsmanship & teamwork */
+    ["Your teammate misses a big shot. A great teammate says…", "Next play — you got this!", ["You lost it for us", "Give me the ball only"], "Lift teammates UP. Short memory, next play — that's how winners talk."],
+    ["The ref calls a foul on you. Champions…", "Accept it and play on", ["Argue every call", "Blame a teammate"], "Own it and move on — the next play matters more than the last whistle."],
+    ["After the final buzzer, win or lose, you…", "Shake hands", ["Storm off", "Brag loudly"], "Good game, good game — respecting your opponents is real strength."],
+    ["A teammate is wide open with a better shot. Great players…", "Pass it", ["Shoot anyway", "Hold it forever"], "The ball finds the best shot on great teams. Passing wins championships."],
+    ["Down big in the fourth quarter, a true competitor…", "Plays hard to the end", ["Gives up", "Blames the refs"], "Effort is the one stat you fully control — play to the final horn."],
   ];
   function trivSit() {
     const t = TRIV[(Math.random() * TRIV.length) | 0];
@@ -4536,36 +4613,90 @@ function openGridiron() {
     { min: 70, q: "You catch a pass near the sideline with the clock running low and no timeouts. Smartest move?",
       ch: [["🚪 Step OUT OF BOUNDS", 1, "Out of bounds STOPS the clock for free. Sideline = your extra timeout.", "run"],
            ["🏃 Cut back to the middle", 0, "The clock keeps running mid-field! Get out of bounds to stop it.", "run"]] },
+    { min: 60, q: "4th down and INCHES at midfield — and your offensive line has pushed them around all day.",
+      ch: [["💪 Quarterback sneak — go for it!", 1, "Fourth and inches at midfield with a line that's winning? Sneak it and keep the drive alive.", "run"],
+           ["🦵 Punt it anyway", 0, "It's INCHES! When your big guys are winning, midfield is go-for-it territory.", "punt"],
+           ["🥅 Try a 57-yard field goal", 0, "That's a monster kick — take the easy inches with a sneak instead.", "kick"]] },
+    { min: 85, q: "You're on DEFENSE, up 4 points, 30 seconds left. They need a TOUCHDOWN. What do you protect most?",
+      ch: [["🛡 The END ZONE — nothing deep!", 1, "Up four, a field goal can't beat you — keep every catch in front of you and guard the end zone.", "pass"],
+           ["💪 Blitz everybody every play", 0, "An all-out blitz risks the ONE deep ball that beats you. Protect the end zone first.", "run"]] },
+    { min: 100, q: "Tie game, ONE second left, ball at their 25-yard line. One play. Who trots onto the field?",
+      ch: [["🥅 The field goal team — kick it!", 1, "A short kick at the buzzer — three points wins a tie game. This is how kickers become heroes.", "kick"],
+           ["🎯 Try one more pass first", 0, "The clock hits zero after this play — take the kick and take the win!", "pass"]] },
+    { min: 120, q: "4th and 20, DOWN 6, 15 seconds left, ball at midfield. Only one call makes sense…",
+      ch: [["🙏 HAIL MARY to the end zone", 1, "Desperation time — protect the QB, send everyone deep, throw it high and pray. Only a touchdown wins it.", "pass"],
+           ["💪 A run up the middle", 0, "A run can't gain 50 yards as time expires — this is Hail Mary time.", "run"],
+           ["🦵 Punt and hope", 0, "Punting while LOSING with 15 seconds left just ends the game. Throw the Hail Mary!", "punt"]] },
   ];
   const TRIV = [
-    ["How many players from ONE team are on the court?", "5", ["4", "6"], "Five per team — ten total. Basketball is 5-on-5."],
-    ["How many points is a free throw worth?", "1", ["2", "3"], "One point — that's why they call them freebies."],
-    ["A shot from INSIDE the arc counts for…", "2 points", ["3 points", "1 point"], "Inside the arc = 2. Behind it = 3."],
-    ["What's it called when you walk without dribbling?", "Traveling", ["Cruising", "Jogging"], "Traveling — turnover! Dribble when you move."],
-    ["Grabbing a missed shot is called a…", "Rebound", ["Refund", "Redo"], "A rebound — boards win games."],
-    ["A pass that leads straight to a basket is an…", "Assist", ["Assign", "Attempt"], "An assist — great passers make everyone better."],
-    ["Stealing the dribble cleanly is called a…", "Steal", ["Borrow", "Grab"], "A steal — defense creates offense."],
-    ["Swatting a shot away is a…", "Block", ["Brick", "Bounce"], "A block! Get vertical, no fouls."],
-    ["A shot that misses EVERYTHING is an…", "Airball", ["Earball", "Oddball"], "Airball — shake it off, shooters keep shooting."],
-    ["Guarding one player everywhere is called…", "Man-to-man", ["Zone", "Tag team"], "Man-to-man. Zone guards areas instead."],
-    ["The 5 position, usually tallest, is the…", "Center", ["Point guard", "Winger"], "The center — rim protector, post scorer."],
-    ["Who usually brings the ball up the court?", "Point guard", ["Center", "Power forward"], "The point guard — the floor general."],
-    ["Bouncing the ball with TWO hands at once is…", "A double dribble", ["A power dribble", "Allowed"], "Double dribble — one hand at a time!"],
-    ["How many fouls disqualify you (most leagues)?", "5", ["3", "10"], "Five fouls and you're out — play smart defense."],
-    ["The winning stat that measures unselfishness?", "Assists", ["Dunks", "Steals"], "Assists — the pass-first mindset."],
+    /* downs & distance */
+    ["How many downs do you get to gain 10 yards?", "4", ["2", "10"], "Four downs to make 10 yards — earn it and you get a fresh set of four."],
+    ["What does 1st and 10 mean?", "First down, 10 yards to go", ["First place, 10 points", "One quarter, 10 players"], "First down, ten yards needed — the start of every new set of downs."],
+    ["Gain 10 yards within your four downs and you earn…", "A new first down", ["A touchdown", "A free timeout"], "A fresh set of downs — move the chains and keep the drive alive!"],
+    ["Fail to gain 10 yards in four downs and…", "The other team gets the ball", ["You get four more tries", "The game ends"], "Turnover on downs — they take over right where you stopped. That's why teams punt!"],
+    ["The sideline chains measure exactly…", "10 yards", ["1 yard", "100 yards"], "The chain crew stretches exactly ten yards — that's how refs check a first down."],
+    ["What are the two main ways to move the ball forward?", "Run and pass", ["Kick and scream", "Hop and skip"], "Run it or throw it — every good offense mixes both to keep defenses guessing."],
+    /* scoring values */
+    ["A touchdown is worth how many points?", "6", ["1", "10"], "Six points — then you line up for the extra kick or a two-point try."],
+    ["The kick after a touchdown is worth…", "1 point", ["6 points", "0 points"], "The extra point — touchdown plus the kick makes seven."],
+    ["A field goal is worth…", "3 points", ["6 points", "2 points"], "Three points — kick it through the uprights when a touchdown is out of reach."],
+    ["Tackling the ball carrier in HIS OWN end zone scores a…", "Safety", ["Touchdown", "Field goal"], "A safety — two points AND your team gets the ball back. Rare and huge!"],
+    ["Running the ball into the end zone AFTER a touchdown, instead of kicking, earns…", "2 points", ["1 point", "6 points"], "The two-point conversion — riskier than the kick, but worth double."],
+    ["Touchdown plus a made extra point adds up to…", "7 points", ["6 points", "9 points"], "Six plus one — seven, the most famous number on a football scoreboard."],
+    /* positions */
+    ["Who snaps the ball to start every play?", "The center", ["The kicker", "The coach"], "The center — every single play begins with his snap."],
+    ["Who takes handoffs and runs with the ball?", "The running back", ["The punter", "The referee"], "The running back — quick feet, strong legs, always following the blockers."],
+    ["Who sprints downfield to catch passes?", "The wide receiver", ["The center", "The nose tackle"], "Wide receivers — speed, sharp routes, and great hands."],
+    ["The five big blockers protecting the quarterback are the…", "Offensive line", ["Defensive backs", "Coaching staff"], "The O-line — no blocking, no time to throw. They're the unsung heroes."],
+    ["Who kicks the field goals and extra points?", "The kicker", ["The quarterback", "The linebacker"], "The kicker — one swing of the leg can win the whole game."],
+    ["The defender in the middle who calls out the defense is the…", "Linebacker", ["Wide receiver", "Water boy"], "The linebacker — the quarterback of the defense, ready for run or pass."],
+    ["The last line of defense covering deep passes is the…", "Safety", ["Center", "Kicker"], "The safety — patrols deep so nothing ever gets behind the defense."],
+    ["The player who booms the ball away on 4th down is the…", "Punter", ["Passer", "Pitcher"], "The punter — high, far kicks that flip the field for your defense."],
+    /* penalties */
+    ["A yellow flag on the ground means…", "A penalty", ["A touchdown", "Halftime"], "A flag means a penalty — someone broke a rule, and their team loses yards."],
+    ["An offensive player jumping before the snap is a…", "False start", ["Fast start", "Jump ball"], "False start — five yards backward. Know the snap count and stay frozen!"],
+    ["A defender crossing the line before the snap is…", "Offsides", ["Onside", "Overtime"], "Offsides — a free five yards for the offense. Patience, defense!"],
+    ["Grabbing and holding a defender's jersey while blocking is…", "Holding", ["Hustling", "Helping"], "Holding — a ten-yard penalty. Block with your feet and position, not your hands."],
+    ["Bumping a receiver before the pass arrives is…", "Pass interference", ["A smart play", "An interception"], "Pass interference — you have to play the BALL, not the player."],
+    ["Pulling a runner down by the facemask is…", "A 15-yard penalty", ["Good tackling", "Worth 2 points"], "Never the facemask — 15 yards, and it can hurt someone. Wrap up the body instead."],
+    /* field geography */
+    ["How long is the field from goal line to goal line?", "100 yards", ["10 yards", "1000 yards"], "One hundred yards of grass — that's why a long touchdown run is so special."],
+    ["Where do touchdowns happen?", "The end zone", ["The bench", "The parking lot"], "The end zone — get the ball across that goal line and it's six points!"],
+    ["The stripe in the exact middle of the field is the…", "50-yard line", ["10-yard line", "Goal line"], "The fifty — midfield, where captains meet for the coin toss."],
+    ["Each end zone is how many yards deep?", "10 yards", ["1 yard", "50 yards"], "Ten yards deep — that's the room receivers have to work in the end zone."],
+    ["The tall yellow posts you kick the ball through are the…", "Goalposts", ["Flagpoles", "Antennas"], "The goalposts — split the uprights and the kick is good!"],
+    ["The invisible line where each play begins is the line of…", "Scrimmage", ["Sight", "Defense"], "The line of scrimmage — both teams stay on their side until the snap."],
+    /* clock rules */
+    ["An incomplete pass does what to the game clock?", "Stops it", ["Speeds it up", "Nothing at all"], "Incompletions stop the clock — that's why trailing teams throw late in games."],
+    ["Running out of bounds late in a half does what?", "Stops the clock", ["Ends the game", "Loses a down"], "Out of bounds stops the clock — the sideline is a free timeout."],
+    ["Throwing the ball straight into the ground to stop the clock is a…", "Spike", ["Fumble", "Punt"], "The spike — it costs one down but freezes the clock for your offense."],
+    ["A winning quarterback kneeling to run out the clock is called…", "Taking a knee", ["Showing off", "A sack"], "Victory formation — kneel, let the clock drain, then shake hands."],
+    ["How many quarters are in a football game?", "4", ["2", "8"], "Four quarters with halftime after the second — just like basketball."],
+    ["If the game is tied after four quarters, you play…", "Overtime", ["Rock paper scissors", "Nothing — it stays tied"], "Overtime — bonus football until somebody wins."],
+    /* famous concepts */
+    ["Extra defenders rushing the quarterback is called a…", "Blitz", ["Picnic", "Huddle"], "The blitz — send the heat! Risky, but it can rattle any quarterback."],
+    ["A desperate deep throw to the end zone as time expires is a…", "Hail Mary", ["Long snap", "Home run"], "The Hail Mary — heave it high and hope. Sometimes miracles happen!"],
+    ["A defender catching the quarterback's pass is an…", "Interception", ["Invitation", "Incompletion"], "An interception — a pick! The defense steals the ball right out of the air."],
+    ["Dropping the ball while running with it is a…", "Fumble", ["Touchback", "Field goal"], "A fumble — the ball is live and ANYONE can grab it. Two hands in traffic!"],
+    ["Tackling the quarterback before he can throw is a…", "Sack", ["Punt", "Catch"], "The sack — the defense wins the play and the offense loses yards."],
+    ["An interception returned all the way for a touchdown is a…", "Pick six", ["Touchback", "Field goal"], "The pick six — steal it, then score it. Six points for the defense!"],
+    ["Football games begin when one team boots the ball to the other. That's the…", "Kickoff", ["Tip-off", "Face-off"], "The kickoff! Tip-off starts basketball, face-off starts hockey — football starts with a kickoff."],
+    /* sportsmanship & teamwork */
+    ["Your teammate drops an easy catch. You say…", "Shake it off — next play!", ["That was awful", "Never again"], "Pick teammates up — everyone drops one. The next catch is the one that matters."],
+    ["After the final whistle, both teams meet to…", "Shake hands", ["Keep tackling", "Argue the calls"], "Win or lose, meet at midfield and shake hands — respect makes the game great."],
+    ["The ref makes a call you don't like. You should…", "Play the next play hard", ["Yell at the ref", "Sit down in protest"], "Refs are human — champions answer tough calls with great plays."],
+    ["You score a touchdown. First, you…", "Celebrate with your blockers", ["Point at the other team", "Brag to the crowd"], "It took eleven players to score — celebrate WITH the teammates who blocked for you."],
+    ["When the team is losing, a real leader…", "Encourages everyone", ["Blames teammates", "Quits at halftime"], "Leaders lift the huddle when it's hard — that's what the C on the jersey means."],
   ];
   function trivSit() {
     const t = TRIV[(Math.random() * TRIV.length) | 0];
-    const opts = [[t[1], 1, t[3], "hold"],
-      ...t[2].map(w => [w, 0, t[3], "hold"])];
-    return { min: 1, you: "PG", q: "QUIZ TIME: " + t[0], ch: opts };
+    const opts = [[t[1], 1, t[3], "run"],
+      ...t[2].map(w => [w, 0, t[3], "run"])];
+    return { min: 1, q: "QUIZ TIME: " + t[0], ch: opts };
   }
   function paramSit(t) {   /* fresh numbers each time a template appears */
-    const up = 1 + ((Math.random() * 3) | 0);
-    const secs = 4 + ((Math.random() * 9) | 0);
-    const q = t.q.replace(/UP by 3/, "UP by 3")
-      .replace(/8 seconds/, secs + " seconds")
-      .replace(/3 SECONDS/, (2 + (Math.random() * 3 | 0)) + " SECONDS");
+    const q = t.q.replace(/2 minutes left/, (2 + (Math.random() * 3 | 0)) + " minutes left")
+      .replace(/10 seconds left/, (5 + (Math.random() * 8 | 0)) + " seconds left");
     return { ...t, q };
   }
   let bag = [];
@@ -4656,7 +4787,7 @@ function openGridiron() {
   function ask() {
     if (play >= 5) return finish(false);
     busy = false;
-    const t = unlocked()[(Math.random() * unlocked().length) | 0];
+    const t = nextSit();
     const ch = [...t.ch].sort(() => Math.random() - .5);
     cur = { t, ch };
     body.innerHTML = `
