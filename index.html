@@ -1749,7 +1749,7 @@ function desktopItems() {
                  act: () => openNewProject(USER.id) });
     items.push({ label: "My Project Box", icon: "folder",
                  act: () => openKidFolder(USER.id) });
-    items.push({ label: "How the Internet Works", icon: "book", act: openExplainer });
+    items.push({ label: "How It All Works", icon: "book", act: openExplainer });
   }
   items.push({ label: "About This Family", icon: "computer", act: openAbout });
   return items;
@@ -1841,7 +1841,7 @@ function buildDesktop() {
           () => openKidFolder(USER.id));
     smAdd(places, "Family Leaderboard", "Who's winning?", "chart",
           () => window.open("/leaderboard", "_blank"));
-    smAdd(places, "How the Internet Works", "Secret knowledge", "book", openExplainer);
+    smAdd(places, "How It All Works", "Networks + HTML, animated", "book", openExplainer);
     smAdd(places, "About This Family", "", "computer", openAbout);
   }
   smAdd(places, "Refresh Desktop", "", "refresh", () => location.reload());
@@ -4539,36 +4539,163 @@ async function openDemoDay() {
 
 /* ============ info windows ============ */
 function openExplainer() {
-  makeWindow("How the Internet Works (at our house)", "book", `
-    <div class="notepadbody">HOW THE INTERNET WORKS AT OUR HOUSE
-=====================================
+  let chap = 0;
+  const win = makeWindow("How It All Works", "book",
+    `<div data-hw style="display:flex;flex-direction:column;gap:10px"></div>`, 560);
+  const body = win.querySelector("[data-hw]");
+  const TABS = ["🏠 Our Network", "⌨️ The Magic Address", "🧱 HTML → Stuff", "🎨 Try It LIVE"];
 
-1. THE SERVER 🖥️
-   Dad's computer is a SERVER — a computer whose job is
-   to hand out webpages when someone asks. It's like a
-   robot librarian that never sleeps.
+  const netSVG = (phase) => `
+    <svg viewBox="0 0 300 120" style="width:100%;background:#eef6ff;border-radius:10px">
+      <path id="wireA" d="M55 62 L150 62" stroke="none" fill="none"/>
+      <path id="wireB" d="M150 62 L245 62" stroke="none" fill="none"/>
+      ${[0,1,2].map(i => `<path d="M ${64+i*8} ${50-i*7} A ${20+i*10} ${20+i*10} 0 0 1 ${64+i*8} ${74+i*7}"
+        fill="none" stroke="#7ab8f0" stroke-width="2" opacity="${.9-i*.25}">
+        <animate attributeName="opacity" values="${.9-i*.25};.1;${.9-i*.25}" dur="1.6s"
+          begin="${i*.3}s" repeatCount="indefinite"/></path>`).join("")}
+      <rect x="20" y="40" width="34" height="46" rx="6" fill="#2c3844" stroke="#111" stroke-width="2"/>
+      <rect x="24" y="46" width="26" height="32" rx="2" fill="#7ec8ff"/>
+      <text x="37" y="102" text-anchor="middle" font-size="9" font-family="Tahoma">iPad</text>
+      <rect x="132" y="48" width="38" height="26" rx="5" fill="#1a5f8b" stroke="#0a3a58" stroke-width="2"/>
+      <circle cx="141" cy="61" r="2.6" fill="#7ef07e"><animate attributeName="opacity"
+        values="1;.3;1" dur=".9s" repeatCount="indefinite"/></circle>
+      <circle cx="151" cy="61" r="2.6" fill="#f5bd00"/><circle cx="161" cy="61" r="2.6" fill="#7ec8ff"/>
+      <line x1="138" y1="48" x2="132" y2="34" stroke="#0a3a58" stroke-width="2.5"/>
+      <line x1="164" y1="48" x2="170" y2="34" stroke="#0a3a58" stroke-width="2.5"/>
+      <text x="151" y="90" text-anchor="middle" font-size="9" font-family="Tahoma">router (post office)</text>
+      <rect x="228" y="36" width="44" height="30" rx="4" fill="#d6d3ce" stroke="#555" stroke-width="2"/>
+      <rect x="232" y="40" width="36" height="20" rx="2" fill="#2a9090"/>
+      <rect x="240" y="68" width="20" height="12" rx="2" fill="#b0aca0" stroke="#555"/>
+      <text x="250" y="98" text-anchor="middle" font-size="9" font-family="Tahoma">our Mac (the server)</text>
+      ${phase >= 1 ? `
+      <circle r="4" fill="#ff8a3a" stroke="#7b3a08"><animateMotion dur="1.6s" repeatCount="indefinite">
+        <mpath href="#wireA"/></animateMotion></circle>
+      <circle r="4" fill="#ff8a3a" stroke="#7b3a08"><animateMotion dur="1.6s" begin=".8s"
+        repeatCount="indefinite"><mpath href="#wireB"/></animateMotion></circle>` : ""}
+      ${phase >= 2 ? `
+      <circle r="4" fill="#3faf2c" stroke="#1a5e1a"><animateMotion dur="1.6s" begin=".4s" keyPoints="1;0"
+        keyTimes="0;1" repeatCount="indefinite" calcMode="linear"><mpath href="#wireB"/></animateMotion></circle>
+      <circle r="4" fill="#3faf2c" stroke="#1a5e1a"><animateMotion dur="1.6s" begin="1.2s" keyPoints="1;0"
+        keyTimes="0;1" repeatCount="indefinite" calcMode="linear"><mpath href="#wireA"/></animateMotion></circle>` : ""}
+    </svg>`;
 
-2. THE ADDRESS 🏠
-   "azizfamily.local" is an ADDRESS, like our house has a
-   street address. When you type it, your tablet shouts
-   across the wifi: "who is azizfamily.local?" and Dad's
-   computer answers "me!"
+  const CH = [
+    { say: "Chapter one: our house has its own tiny internet!",
+      html: `${netSVG(0)}
+      <div class="notepadbody" style="font-size:12px"><b>Our house has its own tiny internet.</b>
 
-3. THE PAGE 📄
-   Webpages are written in a language called HTML.
-   It's just text! When you press Edit on one of your
-   projects, you're reading the actual code. Change it,
-   press Save, and the page changes for EVERYONE in
-   the house. That's real programming.
+🖥️ <b>The server</b> — our Mac. A server is a computer whose whole job is
+handing out pages when asked. It never sleeps, never gets bored. (Watch the
+blue wifi waves pulsing from your iPad — that's real radio, like invisible
+walkie-talkies, millions of beeps per second.)
 
-4. THE WIFI 📡
-   Wifi is invisible radio mail. Your page travels
-   through the air in tiny pieces called packets, and
-   your tablet glues them back together. The big
-   internet works exactly the same way — just with
-   millions of servers instead of one Dad computer.
+📮 <b>The router</b> — the little box with blinking lights is our house's post
+office. EVERY message between devices goes through it, and it never loses one.
 
-Now go build something! — The Management</div>`, 520);
+🏷️ <b>Addresses</b> — every device gets a number-address called an IP address
+(ours look like 192.168.4.___). The router hands them out like street
+addresses, so mail always finds the right house.
+
+📦 <b>Packets</b> — big things (like your webpage) get chopped into tiny
+pieces called packets, each with the address written on it. They race through
+the air separately and your iPad glues them back together. In order. Every time.</div>` },
+    { say: "Chapter two: what really happens when you type the family address.",
+      html: `${netSVG(2)}
+      <div class="notepadbody" style="font-size:12px"><b>You type the family address. Then, in less than a blink:</b>
+
+1️⃣ Your iPad shouts across the wifi: <i>"WHO on this network is our family
+address?!"</i> Our Mac answers: <i>"ME! I'm at address 192.168.4.93!"</i>
+(That shout-and-answer is a real thing called mDNS.)
+
+2️⃣ Your iPad writes a letter — a <b>REQUEST</b> — that literally says:
+<i>GET / please</i> — and hands it to the router (🟠 orange packets flying →).
+
+3️⃣ The Mac reads it, grabs the page, chops it into packets, and mails a
+<b>RESPONSE</b> back (🟢 green packets flying ←).
+
+4️⃣ Your iPad reassembles the packets, and… well, that's chapter three.
+
+🔁 <b>Try this:</b> the visit counter on your page goes up every time you
+refresh — because every refresh is a brand-new letter to the server. You're
+watching yourself send mail!
+
+🌍 The BIG internet works exactly this same way — just with billions of
+servers and routers passing packets around the whole planet in under a second.</div>` },
+    { say: "Chapter three: H T M L — how words in a file become things on a screen.",
+      html: `<div class="notepadbody" style="font-size:12px"><b>The packets carried… a text file. Just words! Called HTML.</b>
+
+Every "thing" on a page is words wearing a costume called a <b>tag</b>:
+
+   <span style="color:#d23c28">&lt;h1&gt;</span>Hello!<span style="color:#d23c28">&lt;/h1&gt;</span>
+   ╰ opening tag    ╰ the stuff    ╰ closing tag (the / means "costume off")
+
+&lt;h1&gt; says "I'm a BIG headline" · &lt;p&gt; = paragraph · &lt;img&gt; = picture ·
+&lt;button&gt; = pressable · &lt;a&gt; = a door to another page.
+
+🧠 Your browser reads the file top to bottom and builds a <b>family tree</b> of
+every tag (really called the DOM — a tree that lives in memory). Then, ~60
+times every second, it <b>paints</b> that tree onto your screen like a
+super-fast artist.
+
+🎨 <b>CSS</b> is the wardrobe department: "make headlines blue, backgrounds
+starry, buttons round." Same tree, different paint.
+
+⚡ <b>JavaScript</b> is the puppeteer: it can grab any branch of the tree and
+CHANGE it while you watch — that's what makes buttons rain emoji.
+
+So: <b>packets → text file → tag tree → painted screen</b>. Every website ever
+made — YouTube, games, your dino page — is exactly this. No exceptions.</div>` },
+    { say: "Chapter four: type in the left box and watch the right side obey you. You are now the browser's boss.",
+      html: `<div style="font-size:12px;color:#555;text-align:center">Type on the left.
+        The browser obeys on the right, instantly. <b>This is real HTML.</b></div>
+      <div style="display:flex;gap:8px;min-height:180px">
+        <textarea data-play spellcheck="false" autocapitalize="off" style="flex:1;font:12px/1.5 Menlo,monospace;
+          border:1px solid #7f9db9;padding:8px;resize:none"><h1>I am learning HTML</h1>
+<p>And the browser does what I say.</p>
+<button onclick="alert('You clicked me!')">Press me</button></textarea>
+        <iframe data-out style="flex:1;background:#fff;border:1px solid #7f9db9"></iframe>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center">
+        <button class="xbtn" data-ins='<h1 style="color:red">RED HEADLINE</h1>'>🔴 Big red words</button>
+        <button class="xbtn" data-ins='<p style="font-size:40px">🦖🦖🦖</p>'>🦖 Giant dinos</button>
+        <button class="xbtn" data-ins='<button onclick="document.body.style.background=&#39;gold&#39;">GOLD MODE</button>'>✨ Magic button</button>
+        <button class="xbtn" data-ins='<ul><li>pizza</li><li>tacos</li><li>ice cream</li></ul>'>📃 A list</button>
+      </div>` },
+  ];
+
+  function render() {
+    body.innerHTML = `
+      <div style="display:flex;gap:5px;flex-wrap:wrap">${TABS.map((t, i) =>
+        `<button class="xbtn ${i === chap ? "primary" : ""}" data-tab="${i}"
+          style="font-size:12px">${t}</button>`).join("")}</div>
+      ${CH[chap].html}
+      <div style="display:flex;justify-content:space-between">
+        <button class="xbtn" data-nav="-1" ${chap ? "" : "disabled"}>← Back</button>
+        <button class="xbtn" data-hear>🔊 Read to me</button>
+        <button class="xbtn primary" data-nav="1" ${chap < 3 ? "" : "disabled"}>Next →</button>
+      </div>`;
+    speak(CH[chap].say);
+    const ta = body.querySelector("[data-play]");
+    if (ta) {
+      const out = body.querySelector("[data-out]");
+      const run = () => out.srcdoc =
+        "<style>body{font-family:Tahoma;padding:10px}</style>" + ta.value;
+      ta.addEventListener("input", run);
+      run();
+    }
+  }
+  body.addEventListener("click", e => {
+    const t = e.target;
+    if (t.dataset.tab !== undefined) { chap = +t.dataset.tab; blip(); render(); }
+    else if (t.dataset.nav) { chap = Math.max(0, Math.min(3, chap + +t.dataset.nav)); blip(); render(); }
+    else if (t.hasAttribute("data-hear")) speak(CH[chap].say);
+    else if (t.dataset.ins) {
+      const ta = body.querySelector("[data-play]");
+      ta.value += "\n" + t.dataset.ins;
+      ta.dispatchEvent(new Event("input")); blip();
+    }
+  });
+  render();
 }
 
 function openAbout() {
