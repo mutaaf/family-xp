@@ -646,7 +646,7 @@ button { font-family: inherit; }
       <div class="col places" id="smplaces"></div>
     </div>
     <div class="foot">
-      <div class="fbtn" data-act="logoff"><span class="fico off">⇦</span> Log Off</div>
+      <div class="fbtn" data-act="logoff"><span class="fico off">⇄</span> Switch User</div>
       <div class="fbtn" data-act="restart"><span class="fico pwr">⏻</span> Restart</div>
     </div>
   </div>
@@ -3238,6 +3238,13 @@ function ssStop() {
   ssOn = false;
   const d = document.getElementById("ssaver");
   if (d) d.remove();
+  /* idle lock: whoever comes back must re-enter THEIR passcode */
+  if (USER) {
+    api("/api/logout", {}).catch(() => {});
+    USER = null; builtFor = null;
+    document.querySelectorAll(".xpwin, .taskbtn").forEach(el => el.remove());
+    showWelcome();
+  }
 }
 
 /* --- Klippy, the helpful paperclip --- */
@@ -4182,6 +4189,46 @@ function openCourt() {
            ["🏀 Challenge the shot-blocker", 0, "He's 7 feet of NOPE. When help comes, somebody is open — find him.", "shoot"]] },
   ];
 
+  const TRIV = [
+    ["How many players from ONE team are on the court?", "5", ["4", "6"], "Five per team — ten total. Basketball is 5-on-5."],
+    ["How many points is a free throw worth?", "1", ["2", "3"], "One point — that's why they call them freebies."],
+    ["A shot from INSIDE the arc counts for…", "2 points", ["3 points", "1 point"], "Inside the arc = 2. Behind it = 3."],
+    ["What's it called when you walk without dribbling?", "Traveling", ["Cruising", "Jogging"], "Traveling — turnover! Dribble when you move."],
+    ["Grabbing a missed shot is called a…", "Rebound", ["Refund", "Redo"], "A rebound — boards win games."],
+    ["A pass that leads straight to a basket is an…", "Assist", ["Assign", "Attempt"], "An assist — great passers make everyone better."],
+    ["Stealing the dribble cleanly is called a…", "Steal", ["Borrow", "Grab"], "A steal — defense creates offense."],
+    ["Swatting a shot away is a…", "Block", ["Brick", "Bounce"], "A block! Get vertical, no fouls."],
+    ["A shot that misses EVERYTHING is an…", "Airball", ["Earball", "Oddball"], "Airball — shake it off, shooters keep shooting."],
+    ["Guarding one player everywhere is called…", "Man-to-man", ["Zone", "Tag team"], "Man-to-man. Zone guards areas instead."],
+    ["The 5 position, usually tallest, is the…", "Center", ["Point guard", "Winger"], "The center — rim protector, post scorer."],
+    ["Who usually brings the ball up the court?", "Point guard", ["Center", "Power forward"], "The point guard — the floor general."],
+    ["Bouncing the ball with TWO hands at once is…", "A double dribble", ["A power dribble", "Allowed"], "Double dribble — one hand at a time!"],
+    ["How many fouls disqualify you (most leagues)?", "5", ["3", "10"], "Five fouls and you're out — play smart defense."],
+    ["The winning stat that measures unselfishness?", "Assists", ["Dunks", "Steals"], "Assists — the pass-first mindset."],
+  ];
+  function trivSit() {
+    const t = TRIV[(Math.random() * TRIV.length) | 0];
+    const opts = [[t[1], 1, t[3], "hold"],
+      ...t[2].map(w => [w, 0, t[3], "hold"])];
+    return { min: 1, you: "PG", q: "QUIZ TIME: " + t[0], ch: opts };
+  }
+  function paramSit(t) {   /* fresh numbers each time a template appears */
+    const up = 1 + ((Math.random() * 3) | 0);
+    const secs = 4 + ((Math.random() * 9) | 0);
+    const q = t.q.replace(/UP by 3/, "UP by 3")
+      .replace(/8 seconds/, secs + " seconds")
+      .replace(/3 SECONDS/, (2 + (Math.random() * 3 | 0)) + " SECONDS");
+    return { ...t, q };
+  }
+  let bag = [];
+  function nextSit() {
+    if (!bag.length) {
+      bag = SITS.filter(t => level >= t.min).map(paramSit);
+      for (let i = 0; i < 2 + (level > 4 ? 2 : 0); i++) bag.push(trivSit());
+      bag.sort(() => Math.random() - .5);
+    }
+    return bag.pop();
+  }
   function unlocked() { return SITS.filter(t => level >= t.min); }
   function needPerfect() { return level >= 20; }
   function suddenDeath() { return level >= 100; }
@@ -4372,7 +4419,7 @@ function openCourt() {
     }
   }
   function askInner() {
-    const t = unlocked()[(Math.random() * unlocked().length) | 0];
+    const t = nextSit();
     const ch = [...t.ch].sort(() => Math.random() - .5);
     cur = { t, ch, spots: lineup(t.you || "PG", t.mods) };
     body.innerHTML = `
@@ -4490,6 +4537,46 @@ function openGridiron() {
       ch: [["🚪 Step OUT OF BOUNDS", 1, "Out of bounds STOPS the clock for free. Sideline = your extra timeout.", "run"],
            ["🏃 Cut back to the middle", 0, "The clock keeps running mid-field! Get out of bounds to stop it.", "run"]] },
   ];
+  const TRIV = [
+    ["How many players from ONE team are on the court?", "5", ["4", "6"], "Five per team — ten total. Basketball is 5-on-5."],
+    ["How many points is a free throw worth?", "1", ["2", "3"], "One point — that's why they call them freebies."],
+    ["A shot from INSIDE the arc counts for…", "2 points", ["3 points", "1 point"], "Inside the arc = 2. Behind it = 3."],
+    ["What's it called when you walk without dribbling?", "Traveling", ["Cruising", "Jogging"], "Traveling — turnover! Dribble when you move."],
+    ["Grabbing a missed shot is called a…", "Rebound", ["Refund", "Redo"], "A rebound — boards win games."],
+    ["A pass that leads straight to a basket is an…", "Assist", ["Assign", "Attempt"], "An assist — great passers make everyone better."],
+    ["Stealing the dribble cleanly is called a…", "Steal", ["Borrow", "Grab"], "A steal — defense creates offense."],
+    ["Swatting a shot away is a…", "Block", ["Brick", "Bounce"], "A block! Get vertical, no fouls."],
+    ["A shot that misses EVERYTHING is an…", "Airball", ["Earball", "Oddball"], "Airball — shake it off, shooters keep shooting."],
+    ["Guarding one player everywhere is called…", "Man-to-man", ["Zone", "Tag team"], "Man-to-man. Zone guards areas instead."],
+    ["The 5 position, usually tallest, is the…", "Center", ["Point guard", "Winger"], "The center — rim protector, post scorer."],
+    ["Who usually brings the ball up the court?", "Point guard", ["Center", "Power forward"], "The point guard — the floor general."],
+    ["Bouncing the ball with TWO hands at once is…", "A double dribble", ["A power dribble", "Allowed"], "Double dribble — one hand at a time!"],
+    ["How many fouls disqualify you (most leagues)?", "5", ["3", "10"], "Five fouls and you're out — play smart defense."],
+    ["The winning stat that measures unselfishness?", "Assists", ["Dunks", "Steals"], "Assists — the pass-first mindset."],
+  ];
+  function trivSit() {
+    const t = TRIV[(Math.random() * TRIV.length) | 0];
+    const opts = [[t[1], 1, t[3], "hold"],
+      ...t[2].map(w => [w, 0, t[3], "hold"])];
+    return { min: 1, you: "PG", q: "QUIZ TIME: " + t[0], ch: opts };
+  }
+  function paramSit(t) {   /* fresh numbers each time a template appears */
+    const up = 1 + ((Math.random() * 3) | 0);
+    const secs = 4 + ((Math.random() * 9) | 0);
+    const q = t.q.replace(/UP by 3/, "UP by 3")
+      .replace(/8 seconds/, secs + " seconds")
+      .replace(/3 SECONDS/, (2 + (Math.random() * 3 | 0)) + " SECONDS");
+    return { ...t, q };
+  }
+  let bag = [];
+  function nextSit() {
+    if (!bag.length) {
+      bag = SITS.filter(t => level >= t.min).map(paramSit);
+      for (let i = 0; i < 2 + (level > 4 ? 2 : 0); i++) bag.push(trivSit());
+      bag.sort(() => Math.random() - .5);
+    }
+    return bag.pop();
+  }
   function unlocked() { return SITS.filter(t => level >= t.min); }
   function needPerfect() { return level >= 20; }
   function suddenDeath() { return level >= 100; }
