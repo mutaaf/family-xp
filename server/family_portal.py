@@ -1334,6 +1334,10 @@ class PortalHandler(SimpleHTTPRequestHandler):
                            if r["id"] == str(data.get("reward"))), None)
             if not reward:
                 return self._json({"error": "unknown prize"}, 404)
+            stored = str(user_by_id(kid).get("passcode") or "")
+            if stored and str(data.get("passcode", "")) != stored:
+                return self._json({"error": "That's not YOUR passcode! Spending "
+                                            "needs the passcode of THIS account."}, 403)
             if balance(kid) < int(reward["price"]):
                 return self._json({"error": "not enough XP yet — keep going!"}, 400)
             prog = _read_json(progress_path(kid), {})

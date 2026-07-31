@@ -3142,6 +3142,7 @@ async function openPrizeCounter() {
     const recent = (d.redemptions || []).filter(r => r.status !== "pending").slice(-4).reverse();
     body.innerHTML = `
       <div class="questhead"><span class="lvlbadge">${tix(d.balance)}</span>
+        <span style="font-size:12px;font-weight:700">💰 ${esc(USER.name)}'s wallet</span>
         <span style="font-size:11px;color:#555">Earn more with chores + quests!</span></div>
       ${pending ? `<div class="mrow" style="background:#fff8dc"><div class="mtxt">
         <b>🕐 ${pending.emoji} ${esc(pending.title)}</b>
