@@ -22,23 +22,27 @@
       d = await (await fetch(`/api/guestbook?kid=${kid}&proj=${proj}`)).json();
     } catch (e) { return; }
     if (d.error) return;
+    const isMine = d.mine;
     const digits = String(d.visits).padStart(5, "0").split("").map(n =>
       `<span style="display:inline-block;background:#111;color:#3f3;padding:2px 6px;` +
       `margin:0 1px;border-radius:4px;font-family:monospace;font-size:20px">${n}</span>`
     ).join("");
     box.innerHTML = `
       <div style="text-align:center;margin-bottom:10px">
-        <div style="font-size:13px;color:#555">👀 people have visited this page</div>
+        <div style="font-size:13px;color:#555">👀 times this page has been opened by the family</div>
         <div>${digits}</div>
-        <div style="font-size:11px;color:#888">(every refresh asks the server again — try it!)</div>
       </div>
-      <b>📖 Guestbook</b>
+      <b>📖 ${esc(d.owner)}'s Guestbook</b>
+      <div style="font-size:12px;color:#666;margin:2px 0 6px">${isMine
+        ? "Visitors can leave you a note here — like a museum guestbook!"
+        : `Leave ${esc(d.owner)} a note — it shows up for everyone in the family.`}</div>
       <div id="gb-list" style="margin:8px 0"></div>
       <form id="gb-form" style="display:flex;gap:6px">
-        <input id="gb-msg" maxlength="300" placeholder="Say something nice…"
+        <input id="gb-msg" maxlength="300" placeholder="${isMine
+          ? "You can sign your own book too…" : "Write something kind for " + esc(d.owner) + "…"}"
           style="flex:1;padding:8px;border-radius:10px;border:2px solid #1446a0;font:inherit">
         <button style="padding:8px 14px;border-radius:10px;border:2px solid #1446a0;
-          background:#ffd23f;font:inherit;cursor:pointer">Sign ✍️</button>
+          background:#ffd23f;font:inherit;cursor:pointer">Sign as ${esc(d.me)} ✍️</button>
       </form>`;
     const list = box.querySelector("#gb-list");
     list.innerHTML = (d.entries || []).length

@@ -994,7 +994,9 @@ class PortalHandler(SimpleHTTPRequestHandler):
                        if e.get("proj") == proj]
             visits = _read_json(stats_path(kid), {}).get(proj, 0)
             return self._json({"entries": entries[-30:], "visits": visits,
-                               "me": user["name"]})
+                               "me": user["name"],
+                               "owner": (user_by_id(kid) or {}).get("name", kid),
+                               "mine": user["id"] == kid})
 
         if path == "/api/demo":
             if not user:

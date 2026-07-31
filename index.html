@@ -2106,6 +2106,7 @@ function openKidFolder(kid) {
         <div class="pbtns">
           <button class="xbtn primary" data-open>Open</button>
           <button class="xbtn" data-edit>✏️ Edit</button>
+          <button class="xbtn" data-share>📣 Share</button>
         </div>
       </div>`).join("")
       : `<div style="padding:14px;color:#666">No projects yet.
@@ -2125,6 +2126,27 @@ function openKidFolder(kid) {
       location.href = `/kids/${kid}/${proj}/`;
     if (e.target.hasAttribute("data-edit"))
       openEditor(kid, proj);
+    if (e.target.hasAttribute("data-share")) {
+      const url = `http://${HOSTN}/kids/${kid}/${proj}/`;
+      const w = makeWindow("Share: " + proj, "web", `
+        <div style="text-align:center;display:flex;flex-direction:column;gap:12px">
+          <div style="font-size:34px">📣</div>
+          <p><b>Anyone in the house can see this page.</b><br>
+            On their phone or tablet (same wifi), they open:</p>
+          <div style="font:700 16px Menlo,monospace;background:#fff;border:1px solid #7f9db9;
+            border-radius:8px;padding:12px;user-select:all">${esc(url)}</div>
+          <p style="font-size:12px;color:#555">First time on that device? They'll see our
+            family sign-in screen — they tap THEIR name and use THEIR passcode.
+            Then they can visit the page and sign the guestbook.</p>
+          <div><button class="xbtn primary" data-cp style="font-size:14px">📋 Copy link</button></div>
+        </div>`, 420);
+      w.querySelector("[data-cp]").addEventListener("click", function () {
+        navigator.clipboard.writeText(url).then(() => {
+          this.textContent = "✅ Copied!"; blip();
+          setTimeout(() => this.textContent = "📋 Copy link", 1500);
+        });
+      });
+    }
   });
 }
 
